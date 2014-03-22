@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Livefyre Ruby utility classes}
   spec.post_install_message = <<-MESSAGE
   !   Note: this is a completely new version of the livefyre gem from Livefyre.
-  !   Users that were previously using the mashable/livefyre gem should now refer to livefyre-mashable.
+  !   Users that were using the previous livefyre gem (v.0.1.2) should now refer to livefyre-mashable.
   !   These two gems cannot be used in conjunction with one another as they share the same namespace.
   MESSAGE
   spec.homepage      = "http://github.com/livefyre/livefyre-ruby-utils"
