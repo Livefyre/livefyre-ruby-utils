@@ -56,7 +56,7 @@ To send Livefyre a user sync url and then have Livefyre pull user data from that
 ```ruby
 network = Livefyre.get_network(network_name, network_key)
 
-network.set_user_sync_url('http://thisisa.test.url/{id}/'')
+network.set_user_sync_url('http://thisisa.test.url/{id}/')
 network.sync_user(system)
 ```
 
