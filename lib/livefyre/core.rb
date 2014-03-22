@@ -20,7 +20,7 @@ module Livefyre
 			response =
 				RestClient.post(
 					"http://#{@network_name}",
-					{ actor_token: build_user_auth_token, pull_profile_url: url_template }
+					{ actor_token: build_lf_token, pull_profile_url: url_template }
 				)
 			response.code == 204
 		end
@@ -29,12 +29,16 @@ module Livefyre
 			response =
 				RestClient.post(
 					"http://#{@network_name}/api/v3_0/user/#{user_id}/refresh",
-					{ lftoken: build_user_auth_token }
+					{ lftoken: build_lf_token }
 				)
 			response.code == 200
 		end
 
-		def build_user_auth_token(user_id = DEFAULT_USER, display_name = DEFAULT_USER, expires = DEFAULT_EXPIRES)
+		def build_lf_token
+			build_user_auth_token(DEFAULT_USER, DEFAULT_USER, DEFAULT_EXPIRES)
+		end
+
+		def build_user_auth_token(user_id, display_name, expires)
 			raise ArgumentError, 'user_id must be alphanumeric' if !(user_id =~ /\A\p{Alnum}+\z/)
 
 			JWT.encode({

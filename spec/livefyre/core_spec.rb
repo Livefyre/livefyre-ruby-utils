@@ -14,7 +14,7 @@ describe Livefyre::Network do
 	end
 
 	it 'should validate a livefyre token' do
-		@network.validate_livefyre_token(@network.build_user_auth_token).should == true
+		@network.validate_livefyre_token(@network.build_lf_token).should == true
 	end
 end
 
