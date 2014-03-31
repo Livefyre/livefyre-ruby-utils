@@ -24,8 +24,7 @@ Creating tokens:
 **Livefyre token:**
 
 ```ruby
-network = Livefyre.get_network(network_name, network_key)
-network.build_lf_token
+Livefyre.get_network(network_name, network_key).build_lf_token
 ```
 
 **User auth token:**
