@@ -9,11 +9,7 @@ Add this line to your application's Gemfile:
 
     gem 'livefyre'
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Or install it yourself:
 
     $ gem install livefyre
 
