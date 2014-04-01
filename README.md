@@ -32,6 +32,7 @@ network.build_user_auth_token('user_id', 'display_name', expires)
 ```
 
 **Collection meta token:**
+The 'stream' argument is optional.
 
 ```ruby
 network = Livefyre.get_network('network_name', 'network_key')
