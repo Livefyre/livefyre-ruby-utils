@@ -1,4 +1,5 @@
 require 'base64'
+require 'digest'
 require 'json'
 require 'jwt'
 require 'rest-client'
@@ -20,7 +21,7 @@ module Livefyre
 			response =
 				RestClient.post(
 					"http://#{@network_name}",
-					{ actor_token: build_lf_token, pull_profile_url: url_template }
+					{ actor_token: build_livefyre_token, pull_profile_url: url_template }
 				)
 			response.code == 204
 		end
@@ -29,12 +30,12 @@ module Livefyre
 			response =
 				RestClient.post(
 					"http://#{@network_name}/api/v3_0/user/#{user_id}/refresh",
-					{ lftoken: build_lf_token }
+					{ lftoken: build_livefyre_token }
 				)
 			response.code == 200
 		end
 
-		def build_lf_token
+		def build_livefyre_token
 			build_user_auth_token(DEFAULT_USER, DEFAULT_USER, DEFAULT_EXPIRES)
 		end
 
@@ -68,16 +69,21 @@ module Livefyre
 				@site_key = site_key
 			end
 	
-			def build_collection_meta_token(title, article_id, url, tags, stream='')
+			def build_collection_meta_token(title, article_id, url, tags='', stream=nil)
 				raise ArgumentError, 'provided url is not a valid url' if !uri?(url)
 				raise ArgumentError, 'title length should be under 255 char' if title.length > 255
-				JWT.encode({
-						title: title,
-						url: url,
-						tags: tags,
-						articleId: article_id,
-						type: stream},
-					@site_key)
+				
+				collection_meta = { url: url, tags: tags, title: title }
+				checksum = Digest::MD5.new.update(collection_meta.to_json).hexdigest
+
+				collection_meta[:articleId] = article_id
+				collection_meta[:checksum] = checksum
+
+				if stream
+					collection_meta[:type] = stream
+				end
+
+				JWT.encode(collection_meta, @site_key)
 			end
 	
 			def get_collection_content(article_id)
@@ -87,6 +93,13 @@ module Livefyre
 						:accepts => :json
 					)
 				response.code == 200 ? JSON.parse(response) : nil
+			end
+
+			def get_collection_id(article_id)
+				content = get_collection_content(article_id)
+				if content
+					content['collectionSettings']['collectionId']
+				end
 			end
 
 			def uri?(string)

@@ -2,7 +2,7 @@ require 'livefyre'
 
 describe Livefyre::Network do
 	before(:each) do
-		@network = Livefyre.get_network('test.fyre.com', 'testkeytest')
+		@network = Livefyre.get_network('networkName', 'networkKey')
 	end
 
 	it 'should raise ArgumentError if url_template does not contain {id}' do
@@ -14,13 +14,13 @@ describe Livefyre::Network do
 	end
 
 	it 'should validate a livefyre token' do
-		@network.validate_livefyre_token(@network.build_lf_token).should == true
+		@network.validate_livefyre_token(@network.build_livefyre_token).should == true
 	end
 end
 
 describe Livefyre::Network::Site do
 	before(:each) do
-		@site = Livefyre.get_network('test.fyre.com', 'testkeytest').get_site("site", "secret")
+		@site = Livefyre.get_network('networkName', 'networkKey').get_site('siteId', "siteKey")
 	end
 
 	it 'should raise ArgumentError if url is not a valid url' do
@@ -29,5 +29,9 @@ describe Livefyre::Network::Site do
 
 	it 'should raise ArgumentError if title is more than 255 characters' do
 		expect{ @site.build_collection_meta_token('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456', 'test', 'http://test.com', 'test') }.to raise_error(ArgumentError)
+	end
+
+	it 'should return a collection meta token' do
+		expect{ @site.build_collection_meta_token('title', 'article_id', 'https://www.url.com', 'tags') }.to be_true
 	end
 end

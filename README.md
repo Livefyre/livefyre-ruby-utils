@@ -15,55 +15,60 @@ Or install it yourself:
 
 ## Usage
 
-Creating tokens:
-
-**Livefyre token:**
-
-```ruby
-Livefyre.get_network('network_name', 'network_key').build_lf_token
-```
-
-**User auth token:**
+Instantiating a network object:
 
 ```ruby
 network = Livefyre.get_network('network_name', 'network_key')
+```
 
+Building a Livefyre token:
+
+```ruby
+network.build_livefyre_token
+```
+
+Building a user auth token:
+
+```ruby
 network.build_user_auth_token('user_id', 'display_name', expires)
-```
-
-**Collection meta token:**
-The 'stream' argument is optional.
-
-```ruby
-network = Livefyre.get_network('network_name', 'network_key')
-site = network.get_site('site_id', 'site_key')
-
-site.build_collection_meta_token('title', 'article_id', 'url', 'tags', 'stream')
 ```
 
 To validate a Livefyre token:
 
 ```ruby
-network = Livefyre.get_network('network_name', 'network_key')
-network.validate_livefyre_token('token')
+network.validate_livefyre_token('lf_token')
 ```
 
 To send Livefyre a user sync url and then have Livefyre pull user data from that url:
 
 ```ruby
-network = Livefyre.get_network('network_name', 'network_key')
+network.set_user_sync_url('url_template')
+network.sync_user('user_id')
+```
 
-network.set_user_sync_url('url{id}')
-network.sync_user('system')
+Instantiating a site object:
+
+```ruby
+site = network.get_site('site_id', 'site_key')
+```
+
+Building a collection meta token:
+*The 'tags' and stream' arguments are optional.*
+
+```ruby
+site.build_collection_meta_token('title', 'article_id', 'url', 'tags', 'stream')
 ```
 
 To retrieve content collection data:
 
 ```ruby
-network = Livefyre.get_network('network_name', 'network_key')
-
-site = network.get_site('site_id', 'site_key')
 site.get_collection_content('article_id')
+```
+
+To get a content collection's id:
+
+```ruby
+site.get_collection_id('article_id')
 ```
 
 ## Documentation
