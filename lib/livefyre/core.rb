@@ -73,17 +73,25 @@ module Livefyre
 				raise ArgumentError, 'provided url is not a valid url' if !uri?(url)
 				raise ArgumentError, 'title length should be under 255 char' if title.length > 255
 				
-				collection_meta = { url: url, tags: tags, title: title }
-				checksum = Digest::MD5.new.update(collection_meta.to_json).hexdigest
-
-				collection_meta[:articleId] = article_id
-				collection_meta[:checksum] = checksum
-
+				collection_meta = {
+					url: url,
+					tags: tags,
+					title: title,
+					articleId: article_id
+				}
 				if stream
 					collection_meta[:type] = stream
 				end
 
 				JWT.encode(collection_meta, @site_key)
+			end
+
+			def build_checksum(title, url, tags='')
+				raise ArgumentError, 'provided url is not a valid url' if !uri?(url)
+				raise ArgumentError, 'title length should be under 255 char' if title.length > 255
+				
+				collection_meta = { url: url, tags: tags, title: title }
+				Digest::MD5.new.update(collection_meta.to_json).hexdigest
 			end
 	
 			def get_collection_content(article_id)

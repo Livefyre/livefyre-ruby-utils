@@ -23,15 +23,27 @@ describe Livefyre::Network::Site do
 		@site = Livefyre.get_network('networkName', 'networkKey').get_site('siteId', "siteKey")
 	end
 
-	it 'should raise ArgumentError if url is not a valid url' do
+	it 'should raise ArgumentError if url is not a valid url for cmt' do
 		expect{ @site.build_collection_meta_token('test', 'test', 'blah.com/', 'test') }.to raise_error(ArgumentError)
 	end
 
-	it 'should raise ArgumentError if title is more than 255 characters' do
+	it 'should raise ArgumentError if title is more than 255 characters for cmt' do
 		expect{ @site.build_collection_meta_token('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456', 'test', 'http://test.com', 'test') }.to raise_error(ArgumentError)
 	end
 
 	it 'should return a collection meta token' do
 		expect{ @site.build_collection_meta_token('title', 'article_id', 'https://www.url.com', 'tags') }.to be_true
+	end
+
+	it 'should raise ArgumentError if url is not a valid url for checksum' do
+		expect{ @site.build_checksum('test', 'blah.com/', 'test') }.to raise_error(ArgumentError)
+	end
+
+	it 'should raise ArgumentError if title is more than 255 characters for checksum' do
+		expect{ @site.build_checksum('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456', 'http://test.com', 'test') }.to raise_error(ArgumentError)
+	end
+
+	it 'should return a valid checksum' do
+		expect(@site.build_checksum('title', 'https://www.url.com', 'tags')).to eq('6e2e4faf7b95f896260fe695eafb34ba')
 	end
 end
