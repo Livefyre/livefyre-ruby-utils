@@ -3,7 +3,7 @@ require 'digest'
 require 'json'
 require 'jwt'
 require 'rest-client'
-require 'uri'
+require 'addressable/uri'
 
 module Livefyre
 	class Network
@@ -111,11 +111,11 @@ module Livefyre
 			end
 
 			def uri?(string)
-			  uri = URI.parse(string)
-			  %w( http https ).include?(uri.scheme)
-			rescue URI::BadURIError
+			  uri = Addressable::URI.parse(string)
+			  %w( ftp ftps http https ).include?(uri.scheme)
+			rescue Addressable::URI::BadURIError
 			  false
-			rescue URI::InvalidURIError
+			rescue Addressable::URI::InvalidURIError
 			  false
 			end
 		end

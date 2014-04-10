@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require 'livefyre'
 
 describe Livefyre::Network do
@@ -45,5 +47,16 @@ describe Livefyre::Network::Site do
 
 	it 'should return a valid checksum' do
 		expect(@site.build_checksum('title', 'https://www.url.com', 'tags')).to eq('6e2e4faf7b95f896260fe695eafb34ba')
+	end
+
+	it 'should check for valid and invalid urls' do
+		expect{ @site.build_checksum('', 'test.com', '') }.to raise_error(ArgumentError)
+		
+		@site.build_checksum('', 'http://localhost:8000', '')
+		@site.build_checksum('', 'http://清华大学.cn', '')
+		@site.build_checksum('', 'http://www.mysite.com/myresumé.html', '')
+		@site.build_checksum('', 'https://test.com/', '')
+		@site.build_checksum('', 'ftp://test.com/', '')
+		@site.build_checksum('', "https://test.com/path/test.-_~!$&'()*+,;=:@/dash", '')
 	end
 end
