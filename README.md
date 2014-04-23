@@ -53,10 +53,10 @@ site = network.get_site('site_id', 'site_key')
 ```
 
 Building a collection meta token:
-*The 'tags' and stream' arguments are optional.*
+*The 'tags' and type' arguments are optional.*
 
 ```ruby
-site.build_collection_meta_token('title', 'article_id', 'url', 'tags', 'stream')
+site.build_collection_meta_token('title', 'article_id', 'url', 'tags', 'type')
 ```
 
 Building a checksum:

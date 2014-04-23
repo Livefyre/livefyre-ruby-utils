@@ -63,13 +63,16 @@ module Livefyre
 		end
 
 		class Site
+			TYPE = ['reviews', 'sidenotes']
+			STREAM_TYPE = ['liveblog', 'livechat', 'livecomments']
+
 			def initialize(network_name, site_id, site_key)
 				@network_name = network_name
 				@site_id = site_id
 				@site_key = site_key
 			end
 	
-			def build_collection_meta_token(title, article_id, url, tags='', stream=nil)
+			def build_collection_meta_token(title, article_id, url, tags='', type=nil)
 				raise ArgumentError, 'provided url is not a valid url' if !uri?(url)
 				raise ArgumentError, 'title length should be under 255 char' if title.length > 255
 				
@@ -79,8 +82,14 @@ module Livefyre
 					title: title,
 					articleId: article_id
 				}
-				if stream
-					collection_meta[:type] = stream
+				if type
+					if TYPE.include? type
+						collection_meta[:type] = type
+					elsif STREAM_TYPE.include? type
+						collection_meta[:stream_type] = type
+					else
+						raise ArgumentError, 'type is not a recognized type. should be liveblog, livechat, livecomments, reviews, sidenotes, or an empty string'
+					end
 				end
 
 				JWT.encode(collection_meta, @site_key)
