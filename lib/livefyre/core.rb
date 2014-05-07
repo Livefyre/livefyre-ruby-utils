@@ -63,8 +63,7 @@ module Livefyre
 		end
 
 		class Site
-			TYPE = ['reviews', 'sidenotes']
-			STREAM_TYPE = ['liveblog', 'livechat', 'livecomments']
+			TYPE = ['reviews', 'sidenotes', 'ratings', 'counting', 'liveblog', 'livechat', 'livecomments']
 
 			def initialize(network_name, site_id, site_key)
 				@network_name = network_name
@@ -85,8 +84,6 @@ module Livefyre
 				if type
 					if TYPE.include? type
 						collection_meta[:type] = type
-					elsif STREAM_TYPE.include? type
-						collection_meta[:stream_type] = type
 					else
 						raise ArgumentError, 'type is not a recognized type. should be liveblog, livechat, livecomments, reviews, sidenotes, or an empty string'
 					end

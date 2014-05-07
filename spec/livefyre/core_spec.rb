@@ -47,7 +47,7 @@ describe Livefyre::Network::Site do
 		@token = @site.build_collection_meta_token('', '', 'http://livefyre.com', '', 'liveblog')
 		@decoded = JWT.decode(@token, 'siteKey')
 
-		expect(@decoded['stream_type']).to eq('liveblog')
+		expect(@decoded['type']).to eq('liveblog')
 	end
 
 	it 'should return a collection meta token' do
