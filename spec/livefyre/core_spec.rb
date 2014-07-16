@@ -21,7 +21,7 @@ describe Livefyre::Network do
 	end
 end
 
-describe Livefyre::Network::Site do
+describe Livefyre::Site do
 	before(:each) do
 		@site = Livefyre.get_network('networkName', 'networkKey').get_site('siteId', 'siteKey')
 	end
@@ -63,7 +63,7 @@ describe Livefyre::Network::Site do
 	end
 
 	it 'should return a valid checksum' do
-		expect(@site.build_checksum('title', 'https://www.url.com', 'tags')).to eq('6e2e4faf7b95f896260fe695eafb34ba')
+		expect(@site.build_checksum('title', 'https://www.url.com', 'tags')).to eq('4464458a10c305693b5bf4d43a384be7')
 	end
 
 	it 'should check for valid and invalid urls' do
