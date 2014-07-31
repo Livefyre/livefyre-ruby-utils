@@ -63,6 +63,12 @@ describe Livefyre::Site do
     @site.build_checksum('', "https://test.com/path/test.-_~!$&'()*+,;=:@/dash", '')
   end
 
+  it 'should test basic site api', :broken => true do
+    @site.get_collection_content(ARTICLE_ID)
+
+    expect(@site.get_collection_id(ARTICLE_ID)).to eq(COLLECTION_ID)
+  end
+
   it 'should test that personalized streams api work for topics', :broken => true do
     @site.create_or_update_topic(1, 'EINS')
     topic = @site.get_topic(1)

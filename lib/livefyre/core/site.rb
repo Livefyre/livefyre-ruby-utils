@@ -15,7 +15,9 @@ module Livefyre
 			@network = network
 			@id = id
 			@key = key
-		end
+    end
+    attr_reader :network
+    attr_reader :id
 
 		def build_collection_meta_token(title, article_id, url, options={})
 			raise ArgumentError, 'provided url is not a valid url' if !uri?(url)
@@ -117,8 +119,8 @@ module Livefyre
       CursorFactory::get_topic_stream_cursor(self, topic, limit, date)
     end
 
-    def get_network_name
-			@network.get_network_name
+    def network_name
+			@network.network_name
     end
 
     def build_livefyre_token

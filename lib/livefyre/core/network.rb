@@ -15,7 +15,9 @@ module Livefyre
 			@name = name
 			@key = key
       @network_name = name.split('.')[0]
-		end
+    end
+    attr_reader :name
+    attr_reader :network_name
 
 		def set_user_sync_url(url_template)
 			raise ArgumentError, 'url_template should contain {id}' if !url_template.include?('{id}')
@@ -130,10 +132,6 @@ module Livefyre
 
     def get_personal_stream_cursor(user, limit=50, date=Time.new)
       CursorFactory::get_personal_stream_cursor(self, user, limit, date)
-    end
-
-    def get_network_name
-      @network_name
     end
 
     def get_urn

@@ -195,7 +195,7 @@ module Livefyre
     private
 
     def self.base_url(core)
-      "https://#{core.get_network_name}.quill.fyre.co/api/v4"
+      "https://#{core.network_name}.quill.fyre.co/api/v4"
     end
 
     STREAM_BASE_URL = 'https://bootstrap.livefyre.com/api/v4'
