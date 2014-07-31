@@ -13,7 +13,8 @@ module Livefyre
 
 		def initialize(name, key)
 			@name = name
-			@key = key  
+			@key = key
+      @network_name = name.split('.')[0]
 		end
 
 		def set_user_sync_url(url_template)
@@ -56,32 +57,36 @@ module Livefyre
 
       token_attributes['domain'] == @name \
 				&& token_attributes['user_id'] == DEFAULT_USER \
-				&& token_attributes['expires'] >= Time.new.to_i
+      && token_attributes['expires'] >= Time.new.to_i
+    end
+
+    def get_site(site_id, site_key)
+      Site.new(self, site_id, site_key)
     end
 
     # Topic API
     def get_topic(topic_id)
-        PersonalizedStreamsClient::get_topic(self, topic_id)
+      PersonalizedStreamsClient::get_topic(self, topic_id)
     end
 
     def create_or_update_topic(topic_id, label)
-        topic = Topic::create(self, topic_id, label)
+      topic = Topic::create(self, topic_id, label)
         PersonalizedStreamsClient::post_topics(self, [topic])
 
         topic
     end
 
     def delete_topic(topic)
-        PersonalizedStreamsClient::patch_topics(self, [topic]) == 1
+      PersonalizedStreamsClient::patch_topics(self, [topic]) == 1
     end
 
     # Multiple Topic API
     def get_topics(limit=100, offset=0)
-        PersonalizedStreamsClient::get_topics(self, limit, offset)
+      PersonalizedStreamsClient::get_topics(self, limit, offset)
     end
 
     def create_or_update_topics(topic_map)
-        topics = []
+      topics = []
 
         topic_map.each do |key, value|
           topics << Topic::create(self, key, value)
@@ -93,54 +98,50 @@ module Livefyre
     end
 
     def delete_topics(topics)
-        PersonalizedStreamsClient::patch_topics(self, topics)
+      PersonalizedStreamsClient::patch_topics(self, topics)
     end
 
     # Subscription API
     def get_subscriptions(user)
-        PersonalizedStreamsClient::get_subscriptions(self, user)
+      PersonalizedStreamsClient::get_subscriptions(self, user)
     end
 
     def add_subscriptions(user, topics)
-        PersonalizedStreamsClient::post_subscriptions(self, user, topics)
+      PersonalizedStreamsClient::post_subscriptions(self, user, topics)
     end
 
     def update_subscriptions(user, topics)
-        PersonalizedStreamsClient::put_subscriptions(self, user, topics)
+      PersonalizedStreamsClient::put_subscriptions(self, user, topics)
     end
 
     def remove_subscriptions(user, topics)
-        PersonalizedStreamsClient::patch_subscriptions(self, user, topics)
+      PersonalizedStreamsClient::patch_subscriptions(self, user, topics)
     end
 
     # Subscriber API
     def get_subscribers(topic, limit=100, offset=0)
-        PersonalizedStreamsClient::get_subscribers(self, topic, limit, offset)
+      PersonalizedStreamsClient::get_subscribers(self, topic, limit, offset)
     end
 
     # Timeline cursor
-    def get_topic_stream_cursor(topic, limit=50)
-        CursorFactory::get_topic_stream_cursor(self, topic, limit)
+    def get_topic_stream_cursor(topic, limit=50, date=Time.new)
+      CursorFactory::get_topic_stream_cursor(self, topic, limit, date)
     end
 
-    def get_personal_stream_cursor(user, limit=50)
-        CursorFactory::get_personal_stream_cursor(self, user, limit)
+    def get_personal_stream_cursor(user, limit=50, date=Time.new)
+      CursorFactory::get_personal_stream_cursor(self, user, limit, date)
     end
 
     def get_network_name
-      @name
+      @network_name
     end
 
     def get_urn
-      "urn:livefyre:#{name}"
+      "urn:livefyre:#{@name}"
     end
 
     def get_user_urn(user)
-      get_urn + ':user=' + user
+      "#{get_urn}:user=#{user}"
     end
-
-    def get_site(site_id, site_key)
-      Site.new(self, site_id, site_key)
-		end
 	end
 end

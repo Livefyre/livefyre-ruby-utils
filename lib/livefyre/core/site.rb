@@ -17,25 +17,21 @@ module Livefyre
 			@key = key
 		end
 
-		def build_collection_meta_token(title, article_id, url, tags='', type=nil)
+		def build_collection_meta_token(title, article_id, url, options={})
 			raise ArgumentError, 'provided url is not a valid url' if !uri?(url)
 			raise ArgumentError, 'title length should be under 255 char' if title.length > 255
 			
 			collection_meta = {
 				url: url,
-				tags: tags,
 				title: title,
 				articleId: article_id
 			}
-			if type
-				if TYPE.include? type
-					collection_meta[:type] = type
-				else
-					raise ArgumentError, 'type is not a recognized type. should be liveblog, livechat, livecomments, reviews, sidenotes, or an empty string'
-				end
+
+			if options.has_key?(:type) && !TYPE.include?(options[:type])
+        raise ArgumentError, 'type is not a recognized type. should be liveblog, livechat, livecomments, reviews, sidenotes, or an empty string'
 			end
 
-			JWT.encode(collection_meta, @key)
+			JWT.encode(collection_meta.merge(options), @key)
 		end
 
 		def build_checksum(title, url, tags='')
@@ -49,7 +45,7 @@ module Livefyre
 		def get_collection_content(article_id)
 			response = 
 				RestClient.get(
-					"http://bootstrap.#{@network.name}/bs3/#{@network.name}/#{@id}/#{Base64.encode64(article_id.to_s).chomp}/init",
+					"https://bootstrap.livefyre.com/bs3/#{@network.name}/#{@id}/#{Base64.encode64(article_id.to_s).chomp}/init",
 					:accepts => :json
 				)
 			response.code == 200 ? JSON.parse(response) : nil
@@ -69,13 +65,13 @@ module Livefyre
 
     def create_or_update_topic(topic_id, label)
       topic = Topic::create(self, topic_id, label)
-      PersonalizedStreamsClient::post_topic(self, [topic])
+      PersonalizedStreamsClient::post_topics(self, [topic])
 
       topic
     end
 
     def delete_topic(topic)
-      PersonalizedStreamsClient::patch_topic(self, [topic]) == 1
+      PersonalizedStreamsClient::patch_topics(self, [topic]) == 1
     end
 
     # Multiple Topic API
@@ -117,12 +113,12 @@ module Livefyre
     end
 
     # Timeline cursor
-    def get_topic_stream_cursor(topic, limit=50)
-      CursorFactory::get_topic_stream_cursor(self, topic, limit)
+    def get_topic_stream_cursor(topic, limit=50, date=Time.new)
+      CursorFactory::get_topic_stream_cursor(self, topic, limit, date)
     end
 
     def get_network_name
-			@network.name
+			@network.get_network_name
     end
 
     def build_livefyre_token
@@ -130,7 +126,7 @@ module Livefyre
     end
 
 		def get_urn
-			"#{@network.get_urn}" + ":site=#{@id}"
+			"#{@network.get_urn}:site=#{@id}"
 		end
 
 		def uri?(string)

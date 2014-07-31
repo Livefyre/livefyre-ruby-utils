@@ -3,6 +3,7 @@ require 'rest-client'
 require 'addressable/uri'
 
 require 'livefyre/entity/topic'
+require 'livefyre/entity/subscription'
 
 module Livefyre
 	class PersonalizedStreamsClient
@@ -35,9 +36,14 @@ module Livefyre
 		def self.post_topics(core, topics)
 			url = self.base_url(core) + self.multiple_topic_path(core)
       headers = self.get_headers(core)
-      headers[:type => :json]
+      headers[:content_type] = :json
 
-      response = RestClient.post(url, {:topics => topics}, headers)
+      topics_json = []
+      topics.each do |topic|
+        topics_json << topic.to_dict
+      end
+
+      response = RestClient.post(url, {topics: topics_json}.to_json, headers)
       data = JSON.parse(response)['data']
 
       return data.has_key?('created') ? data['created'] : 0, data.has_key?('updated') ? data['updated'] : 0
@@ -46,9 +52,10 @@ module Livefyre
 		def self.patch_topics(core, topics)
 			url = self.base_url(core) + self.multiple_topic_path(core)
       headers = self.get_headers(core)
-      headers[:type => :json]
+      headers[:content_type] = :json
+      form = {delete: self.get_ids(topics)}
 
-      response = RestClient.patch(url, {:delete => self.get_ids(topics)}, headers)
+      response = RestClient.patch(url, form.to_json, headers)
       data = JSON.parse(response)['data']
 
       data.has_key?('deleted') ? data['deleted'] : 0
@@ -67,9 +74,10 @@ module Livefyre
 		def self.post_collection_topics(site, collection_id, topics)
 			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
       headers = self.get_headers(site)
-      headers[:type => :json]
+      headers[:content_type] = :json
+      form = {topicIds: self.get_ids(topics)}
 
-      response = RestClient.post(url, {:topics => self.get_ids(topics)}, headers)
+      response = RestClient.post(url, form.to_json, headers)
       data = JSON.parse(response)['data']
 
       data.has_key?('added') ? data['added'] : 0
@@ -78,9 +86,10 @@ module Livefyre
 		def self.put_collection_topics(site, collection_id, topics)
 			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
       headers = self.get_headers(site)
-      headers[:type => :json]
+      headers[:content_type] = :json
+      form = {topicIds: self.get_ids(topics)}
 
-      response = RestClient.post(url, {:topics => self.get_ids(topics)}, headers)
+      response = RestClient.put(url, form.to_json, headers)
       data = JSON.parse(response)['data']
 
       return data.has_key?('added') ? data['added'] : 0, data.has_key?('removed') ? data['removed'] : 0
@@ -89,9 +98,10 @@ module Livefyre
 		def self.patch_collection_topics(site, collection_id, topics)
 			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
       headers = self.get_headers(site)
-      headers[:type => :json]
+      headers[:content_type] = :json
+      form = {delete: self.get_ids(topics)}
 
-      response = RestClient.post(url, {:delete => self.get_ids(topics)}, headers)
+      response = RestClient.patch(url, form.to_json, headers)
       data = JSON.parse(response)['data']
 
       data.has_key?('removed') ? data['removed'] : 0
@@ -99,7 +109,7 @@ module Livefyre
 
 		# Subscription API
 		def self.get_subscriptions(network, user)
-			url = self.base_url(network) + self.user_subscription_path(core, user)
+			url = self.base_url(network) + self.user_subscription_path(network, user)
 
       response = RestClient.get(url, self.get_headers(network))
       data = JSON.parse(response)['data']
@@ -115,33 +125,36 @@ module Livefyre
 		end
 
 		def self.post_subscriptions(network, user, topics)
-			url = self.base_url(network) + self.user_subscription_path(core, user)
+			url = self.base_url(network) + self.user_subscription_path(network, user)
       headers = self.get_headers(network, user)
-      headers[:type => :json]
+      headers[:content_type] = :json
+      form = {subscriptions: self.to_subscriptions(topics, network.get_user_urn(user))}
 
-      response = RestClient.post(url, {:topics => self.to_subscriptions(topics)}, headers)
+      response = RestClient.post(url, form.to_json, headers)
       data = JSON.parse(response)['data']
 
       data.has_key?('added') ? data['added'] : 0
 		end
 
 		def self.put_subscriptions(network, user, topics)
-			url = self.base_url(network) + self.user_subscription_path(core, user)
+			url = self.base_url(network) + self.user_subscription_path(network, user)
       headers = self.get_headers(network, user)
-      headers[:type => :json]
+      headers[:content_type] = :json
+      form = {subscriptions: self.to_subscriptions(topics, network.get_user_urn(user))}
 
-      response = RestClient.post(url, {:topics => self.to_subscriptions(topics)}, headers)
+      response = RestClient.put(url, form.to_json, headers)
       data = JSON.parse(response)['data']
 
       return data.has_key?('added') ? data['added'] : 0, data.has_key?('removed') ? data['removed'] : 0
 		end
 
 		def self.patch_subscriptions(network, user, topics)
-			url = self.base_url(network) + self.user_subscription_path(core, user)
+			url = self.base_url(network) + self.user_subscription_path(network, user)
       headers = self.get_headers(network, user)
-      headers[:type => :json]
+      headers[:content_type] = :json
+      form = {delete: self.to_subscriptions(topics, network.get_user_urn(user))}
 
-      response = RestClient.post(url, {:delete => self.to_subscriptions(topics)}, headers)
+      response = RestClient.patch(url, form.to_json, headers)
       data = JSON.parse(response)['data']
 
       data.has_key?('removed') ? data['removed'] : 0
@@ -165,7 +178,14 @@ module Livefyre
 
 		# Stream API
 		def self.get_timeline_stream(core, resource, limit=50, t_until=nil, t_since=nil)
-			url = self.stream_base_url(core) + self.timeline_path
+			url = STREAM_BASE_URL + TIMELINE_PATH
+      url += "?resource=#{resource}&limit=#{limit}"
+
+      if t_until != nil
+        url += "&until=#{t_until}"
+      elsif t_since != nil
+        url += "&since=#{t_since}"
+      end
 
       response = RestClient.get(url, self.get_headers(core))
 
@@ -175,12 +195,10 @@ module Livefyre
     private
 
     def self.base_url(core)
-      "http://quill.#{core.get_network_name}/api/v4"
+      "https://#{core.get_network_name}.quill.fyre.co/api/v4"
     end
 
-    def self.stream_base_url(core)
-      "http://bootstrap.#{core.get_network_name}/api/v4"
-    end
+    STREAM_BASE_URL = 'https://bootstrap.livefyre.com/api/v4'
 
     def self.topic_path(core, topic_id)
       "/#{Topic.generate_urn(core, topic_id)}/"
@@ -202,9 +220,7 @@ module Livefyre
       "/#{topic.id}:subscribers/"
     end
 
-    def self.timeline_path
-      '/timeline/'
-    end
+    TIMELINE_PATH = '/timeline/'
 
     def self.get_headers(core, user=nil)
       token = user == nil ? core.build_livefyre_token : core.build_user_auth_token(user, nil, Network::DEFAULT_EXPIRES)
@@ -218,6 +234,14 @@ module Livefyre
       end
 
       ids
+    end
+
+    def self.to_subscriptions(topics, user)
+      subscriptions = []
+      topics.each do |topic|
+        subscriptions << Subscription.new(topic.id, user, SubscriptionType::PERSONAL_STREAM).to_dict
+      end
+      subscriptions
     end
 	end
 end
