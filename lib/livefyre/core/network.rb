@@ -2,9 +2,7 @@ require 'addressable/uri'
 require 'jwt'
 require 'rest-client'
 
-require 'livefyre/api/personalized_streams'
 require 'livefyre/core/site'
-require 'livefyre/factory/cursor_factory'
 
 module Livefyre
 	class Network
@@ -64,74 +62,6 @@ module Livefyre
 
     def get_site(site_id, site_key)
       Site.new(self, site_id, site_key)
-    end
-
-    # Topic API
-    def get_topic(topic_id)
-      PersonalizedStreamsClient::get_topic(self, topic_id)
-    end
-
-    def create_or_update_topic(topic_id, label)
-      topic = Topic::create(self, topic_id, label)
-        PersonalizedStreamsClient::post_topics(self, [topic])
-
-        topic
-    end
-
-    def delete_topic(topic)
-      PersonalizedStreamsClient::patch_topics(self, [topic]) == 1
-    end
-
-    # Multiple Topic API
-    def get_topics(limit=100, offset=0)
-      PersonalizedStreamsClient::get_topics(self, limit, offset)
-    end
-
-    def create_or_update_topics(topic_map)
-      topics = []
-
-        topic_map.each do |key, value|
-          topics << Topic::create(self, key, value)
-        end
-
-        PersonalizedStreamsClient::post_topics(self, topics)
-
-        topics
-    end
-
-    def delete_topics(topics)
-      PersonalizedStreamsClient::patch_topics(self, topics)
-    end
-
-    # Subscription API
-    def get_subscriptions(user)
-      PersonalizedStreamsClient::get_subscriptions(self, user)
-    end
-
-    def add_subscriptions(user, topics)
-      PersonalizedStreamsClient::post_subscriptions(self, user, topics)
-    end
-
-    def update_subscriptions(user, topics)
-      PersonalizedStreamsClient::put_subscriptions(self, user, topics)
-    end
-
-    def remove_subscriptions(user, topics)
-      PersonalizedStreamsClient::patch_subscriptions(self, user, topics)
-    end
-
-    # Subscriber API
-    def get_subscribers(topic, limit=100, offset=0)
-      PersonalizedStreamsClient::get_subscribers(self, topic, limit, offset)
-    end
-
-    # Timeline cursor
-    def get_topic_stream_cursor(topic, limit=50, date=Time.new)
-      CursorFactory::get_topic_stream_cursor(self, topic, limit, date)
-    end
-
-    def get_personal_stream_cursor(user, limit=50, date=Time.new)
-      CursorFactory::get_personal_stream_cursor(self, user, limit, date)
     end
 
     def get_urn

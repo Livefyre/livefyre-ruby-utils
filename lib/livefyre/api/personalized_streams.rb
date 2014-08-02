@@ -15,7 +15,15 @@ module Livefyre
       data = JSON.parse(response)['data']
 
       Topic::serialize_from_json(data['topic'])
-		end
+    end
+
+    def self.create_or_update_topic(core, topic_id, label)
+      PersonalizedStreamsClient::create_or_update_topics(core, { "#{topic_id}" => label })[0]
+    end
+
+    def self.delete_topic(core, topic)
+      PersonalizedStreamsClient::delete_topics(core, [topic]) == 1
+    end
 
 		# Multiple Topic API
 		def self.get_topics(core, limit=100, offset=0)
@@ -33,7 +41,16 @@ module Livefyre
       topics
 		end
 
-		def self.post_topics(core, topics)
+		def self.create_or_update_topics(core, topic_map)
+      topics = []
+
+      topic_map.each do |key, value|
+        if not value or value.length > 128
+            raise ArgumentError, 'label cannot be longer than 128 chars.'
+        end
+        topics << Topic::create(core, key, value)
+      end
+
 			url = self.base_url(core) + self.multiple_topic_path(core)
       headers = self.get_headers(core)
       headers[:content_type] = :json
@@ -44,12 +61,12 @@ module Livefyre
       end
 
       response = RestClient.post(url, {topics: topics_json}.to_json, headers)
-      data = JSON.parse(response)['data']
+      JSON.parse(response)['data']
 
-      return data.has_key?('created') ? data['created'] : 0, data.has_key?('updated') ? data['updated'] : 0
+      return topics
 		end
 
-		def self.patch_topics(core, topics)
+		def self.delete_topics(core, topics)
 			url = self.base_url(core) + self.multiple_topic_path(core)
       headers = self.get_headers(core)
       headers[:content_type] = :json
@@ -71,7 +88,7 @@ module Livefyre
       data.has_key?('topicIds') ? data['topicIds'] : []
 		end
 
-		def self.post_collection_topics(site, collection_id, topics)
+		def self.add_collection_topics(site, collection_id, topics)
 			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
       headers = self.get_headers(site)
       headers[:content_type] = :json
@@ -83,7 +100,7 @@ module Livefyre
       data.has_key?('added') ? data['added'] : 0
 		end
 
-		def self.put_collection_topics(site, collection_id, topics)
+		def self.replace_collection_topics(site, collection_id, topics)
 			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
       headers = self.get_headers(site)
       headers[:content_type] = :json
@@ -95,7 +112,7 @@ module Livefyre
       return data.has_key?('added') ? data['added'] : 0, data.has_key?('removed') ? data['removed'] : 0
 		end
 
-		def self.patch_collection_topics(site, collection_id, topics)
+		def self.remove_collection_topics(site, collection_id, topics)
 			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
       headers = self.get_headers(site)
       headers[:content_type] = :json
@@ -124,7 +141,7 @@ module Livefyre
       subscriptions
 		end
 
-		def self.post_subscriptions(network, user, topics)
+		def self.add_subscriptions(network, user, topics)
 			url = self.base_url(network) + self.user_subscription_path(network, user)
       headers = self.get_headers(network, user)
       headers[:content_type] = :json
@@ -136,7 +153,7 @@ module Livefyre
       data.has_key?('added') ? data['added'] : 0
 		end
 
-		def self.put_subscriptions(network, user, topics)
+		def self.replace_subscriptions(network, user, topics)
 			url = self.base_url(network) + self.user_subscription_path(network, user)
       headers = self.get_headers(network, user)
       headers[:content_type] = :json
@@ -148,7 +165,7 @@ module Livefyre
       return data.has_key?('added') ? data['added'] : 0, data.has_key?('removed') ? data['removed'] : 0
 		end
 
-		def self.patch_subscriptions(network, user, topics)
+		def self.remove_subscriptions(network, user, topics)
 			url = self.base_url(network) + self.user_subscription_path(network, user)
       headers = self.get_headers(network, user)
       headers[:content_type] = :json

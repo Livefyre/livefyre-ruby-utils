@@ -5,8 +5,6 @@ require 'jwt'
 require 'rest-client'
 require 'addressable/uri'
 
-require 'livefyre/api/personalized_streams'
-
 module Livefyre
 	class Site
 		TYPE = %w(reviews sidenotes ratings counting liveblog livechat livecomments)
@@ -58,65 +56,6 @@ module Livefyre
 			if content
 				content['collectionSettings']['collectionId']
 			end
-    end
-
-    # Topic API
-    def get_topic(topic_id)
-      PersonalizedStreamsClient::get_topic(self, topic_id)
-    end
-
-    def create_or_update_topic(topic_id, label)
-      topic = Topic::create(self, topic_id, label)
-      PersonalizedStreamsClient::post_topics(self, [topic])
-
-      topic
-    end
-
-    def delete_topic(topic)
-      PersonalizedStreamsClient::patch_topics(self, [topic]) == 1
-    end
-
-    # Multiple Topic API
-    def get_topics(limit=100, offset=0)
-      PersonalizedStreamsClient::get_topics(self, limit, offset)
-    end
-
-    def create_or_update_topics(topic_map)
-      topics = []
-
-      topic_map.each do |key, value|
-        topics << Topic::create(self, key, value)
-      end
-
-      PersonalizedStreamsClient::post_topics(self, topics)
-
-      topics
-    end
-
-    def delete_topics(topics)
-      PersonalizedStreamsClient::patch_topics(self, topics)
-    end
-
-    # Subscription API
-    def get_collection_topics(collection_id)
-      PersonalizedStreamsClient::get_collection_topics(self, collection_id)
-    end
-
-    def add_collection_topics(collection_id, topics)
-      PersonalizedStreamsClient::post_collection_topics(self, collection_id, topics)
-    end
-
-    def update_collection_topics(collection_id, topics)
-      PersonalizedStreamsClient::put_collection_topics(self, collection_id, topics)
-    end
-
-    def remove_collection_topics(collection_id, topics)
-      PersonalizedStreamsClient::patch_collection_topics(self, collection_id, topics)
-    end
-
-    # Timeline cursor
-    def get_topic_stream_cursor(topic, limit=50, date=Time.new)
-      CursorFactory::get_topic_stream_cursor(self, topic, limit, date)
     end
 
     def network_name

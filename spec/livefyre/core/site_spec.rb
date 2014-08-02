@@ -68,23 +68,4 @@ describe Livefyre::Site do
 
     expect(@site.get_collection_id(ARTICLE_ID)).to eq(COLLECTION_ID)
   end
-
-  it 'should test that personalized streams api work for topics', :broken => true do
-    @site.create_or_update_topic(1, 'EINS')
-    topic = @site.get_topic(1)
-    @site.delete_topic(topic).should == true
-
-    @site.create_or_update_topics({1 => 'EINS', 2 => 'ZWEI'})
-    topics = @site.get_topics
-    @site.delete_topics(topics)
-  end
-
-  it 'should test that personalized streams api work for collections', :broken => true do
-    topics = @site.create_or_update_topics({1 => 'EINS', 2 => 'ZWEI'})
-
-    @site.add_collection_topics(COLLECTION_ID, topics)
-    @site.get_collection_topics(COLLECTION_ID)
-    @site.update_collection_topics(COLLECTION_ID, [topics[1]])
-    @site.remove_collection_topics(COLLECTION_ID, [topics[1]])
-  end
 end
