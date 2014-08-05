@@ -44,9 +44,27 @@ module Livefyre
 			Digest::MD5.new.update(collection_meta.to_json).hexdigest
 		end
 
+
+    def create_collection(title, article_id, url, options={})
+      uri = "https://#{network_name}.quill.fyre.co/api/v3.0/site/#{@id}/collection/create/?sync=1"
+      data = {
+        articleId: article_id,
+        collectionMeta: build_collection_meta_token(title, article_id, url, options),
+        checksum: build_checksum(title, url, options.has_key?(:tags) ? options[:tags] : '')
+      }
+      headers = {:accepts => :json, :content_type => :json}
+
+      response = RestClient.post(uri, data.to_json, headers)
+
+      if response.code == 200
+        return JSON.parse(response)['data']['collectionId']
+      end
+
+      nil
+    end
+
 		def get_collection_content(article_id)
-			response = 
-				RestClient.get(
+			response = RestClient.get(
 					"https://bootstrap.livefyre.com/bs3/#{@network.name}/#{@id}/#{Base64.encode64(article_id.to_s).chomp}/init",
 					:accepts => :json
 				)

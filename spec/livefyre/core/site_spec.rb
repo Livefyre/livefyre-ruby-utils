@@ -66,6 +66,8 @@ describe Livefyre::Site do
   it 'should test basic site api', :broken => true do
     @site.get_collection_content(ARTICLE_ID)
 
-    expect(@site.get_collection_id(ARTICLE_ID)).to eq(COLLECTION_ID)
+    name = "RubyCreateCollection#{Time.new}"
+    id = @site.create_collection(name, name, 'http://answers.livefyre.com/RUBY')
+    expect(@site.get_collection_id(name)).to eq(id)
   end
 end

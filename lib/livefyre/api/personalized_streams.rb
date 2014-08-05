@@ -186,6 +186,7 @@ module Livefyre
 
 		def self.get_subscribers(network, topic, limit=100, offset=0)
 			url = self.base_url(network) + self.topic_subscription_path(topic)
+      url += "?limit=#{limit}&offset=#{offset}"
 
       response = RestClient.get(url, self.get_headers(network))
       data = JSON.parse(response)['data']

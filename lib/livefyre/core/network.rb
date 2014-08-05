@@ -22,8 +22,7 @@ module Livefyre
 		def set_user_sync_url(url_template)
 			raise ArgumentError, 'url_template should contain {id}' if !url_template.include?('{id}')
 			
-			response =
-				RestClient.post(
+			response = RestClient.post(
 					"http://#{@name}",
 					{ actor_token: build_livefyre_token, pull_profile_url: url_template }
 				)
@@ -31,8 +30,7 @@ module Livefyre
 		end
 
 		def sync_user(user_id)
-			response =
-				RestClient.post(
+			response = RestClient.post(
 					"http://#{@name}/api/v3_0/user/#{user_id}/refresh",
 					{ lftoken: build_livefyre_token }
 				)
