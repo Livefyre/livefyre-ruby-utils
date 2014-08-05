@@ -14,8 +14,10 @@ module Livefyre
 			@id = id
 			@key = key
     end
+
     attr_reader :network
     attr_reader :id
+    attr_reader :key
 
 		def build_collection_meta_token(title, article_id, url, options={})
 			raise ArgumentError, 'provided url is not a valid url' if !uri?(url)

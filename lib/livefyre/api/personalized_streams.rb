@@ -1,4 +1,5 @@
 require 'json'
+require 'jwt'
 require 'rest-client'
 require 'addressable/uri'
 
@@ -125,8 +126,8 @@ module Livefyre
 		end
 
 		# Subscription API
-		def self.get_subscriptions(network, user)
-			url = self.base_url(network) + self.user_subscription_path(network, user)
+		def self.get_subscriptions(network, user_id)
+			url = self.base_url(network) + self.user_subscription_path(network.get_user_urn(user_id))
 
       response = RestClient.get(url, self.get_headers(network))
       data = JSON.parse(response)['data']
@@ -141,11 +142,13 @@ module Livefyre
       subscriptions
 		end
 
-		def self.add_subscriptions(network, user, topics)
-			url = self.base_url(network) + self.user_subscription_path(network, user)
-      headers = self.get_headers(network, user)
+		def self.add_subscriptions(network, user_token, topics)
+      user_id = JWT.decode(user_token, network.key)['user_id']
+      user_urn = network.get_user_urn(user_id)
+			url = self.base_url(network) + self.user_subscription_path(user_urn)
+      headers = self.get_headers(network, user_token)
       headers[:content_type] = :json
-      form = {subscriptions: self.to_subscriptions(topics, network.get_user_urn(user))}
+      form = {subscriptions: self.to_subscriptions(topics, user_urn)}
 
       response = RestClient.post(url, form.to_json, headers)
       data = JSON.parse(response)['data']
@@ -153,11 +156,13 @@ module Livefyre
       data.has_key?('added') ? data['added'] : 0
 		end
 
-		def self.replace_subscriptions(network, user, topics)
-			url = self.base_url(network) + self.user_subscription_path(network, user)
-      headers = self.get_headers(network, user)
+		def self.replace_subscriptions(network, user_token, topics)
+      user_id = JWT.decode(user_token, network.key)['user_id']
+      user_urn = network.get_user_urn(user_id)
+			url = self.base_url(network) + self.user_subscription_path(user_urn)
+      headers = self.get_headers(network, user_token)
       headers[:content_type] = :json
-      form = {subscriptions: self.to_subscriptions(topics, network.get_user_urn(user))}
+      form = {subscriptions: self.to_subscriptions(topics, user_urn)}
 
       response = RestClient.put(url, form.to_json, headers)
       data = JSON.parse(response)['data']
@@ -165,11 +170,13 @@ module Livefyre
       return data.has_key?('added') ? data['added'] : 0, data.has_key?('removed') ? data['removed'] : 0
 		end
 
-		def self.remove_subscriptions(network, user, topics)
-			url = self.base_url(network) + self.user_subscription_path(network, user)
-      headers = self.get_headers(network, user)
+		def self.remove_subscriptions(network, user_token, topics)
+      user_id = JWT.decode(user_token, network.key)['user_id']
+      user_urn = network.get_user_urn(user_id)
+			url = self.base_url(network) + self.user_subscription_path(user_urn)
+      headers = self.get_headers(network, user_token)
       headers[:content_type] = :json
-      form = {delete: self.to_subscriptions(topics, network.get_user_urn(user))}
+      form = {delete: self.to_subscriptions(topics, user_urn)}
 
       response = RestClient.patch(url, form.to_json, headers)
       data = JSON.parse(response)['data']
@@ -229,8 +236,8 @@ module Livefyre
       "/#{site.get_urn}:collection=#{collection_id}:topics/"
     end
 
-    def self.user_subscription_path(network, user)
-      "/#{network.get_user_urn(user)}:subscriptions/"
+    def self.user_subscription_path(user_urn)
+      "/#{user_urn}:subscriptions/"
     end
 
     def self.topic_subscription_path(topic)
@@ -239,9 +246,8 @@ module Livefyre
 
     TIMELINE_PATH = '/timeline/'
 
-    def self.get_headers(core, user=nil)
-      token = user == nil ? core.build_livefyre_token : core.build_user_auth_token(user, nil, Network::DEFAULT_EXPIRES)
-      {:accepts => :json, :authorization => 'lftoken ' + token}
+    def self.get_headers(core, user_token=nil)
+      {:accepts => :json, :authorization => 'lftoken ' + (user_token == nil ? core.build_livefyre_token : user_token)}
     end
 
     def self.get_ids(topics)

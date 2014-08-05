@@ -25,12 +25,13 @@ describe Livefyre::Network, :broken => true do
 
   it 'should test that personalized streams api work for subscriptions' do
     topics = Livefyre::PersonalizedStreamsClient::create_or_update_topics(@network, {1 => 'EINS', 2 => 'ZWEI'})
+    user_token = @network.build_user_auth_token(USER_ID, "#{USER_ID}@#{NETWORK_NAME}", Livefyre::Network::DEFAULT_EXPIRES)
 
-    Livefyre::PersonalizedStreamsClient::add_subscriptions(@network, USER_ID, topics)
+    Livefyre::PersonalizedStreamsClient::add_subscriptions(@network, user_token, topics)
     Livefyre::PersonalizedStreamsClient::get_subscriptions(@network, USER_ID)
-    Livefyre::PersonalizedStreamsClient::replace_subscriptions(@network, USER_ID, [topics[1]])
+    Livefyre::PersonalizedStreamsClient::replace_subscriptions(@network, user_token, [topics[1]])
     Livefyre::PersonalizedStreamsClient::get_subscribers(@network, topics[1])
-    Livefyre::PersonalizedStreamsClient::remove_subscriptions(@network, USER_ID, [topics[1]])
+    Livefyre::PersonalizedStreamsClient::remove_subscriptions(@network, user_token, [topics[1]])
   end
 
   it 'should test that personalized streams api work for timelines and cursors' do

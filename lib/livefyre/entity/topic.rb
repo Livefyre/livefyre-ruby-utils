@@ -9,6 +9,11 @@ module Livefyre
       @modified_at = modified_at
     end
 
+    attr_reader :id
+    attr_reader :label
+    attr_reader :created_at
+    attr_reader :modified_at
+
     def self.create(core, id, label)
       new(Topic::generate_urn(core, id), label)
     end
@@ -37,10 +42,5 @@ module Livefyre
     def get_truncated_id
       @id[@id.index(TOPIC_IDENTIFIER) + TOPIC_IDENTIFIER.length]
     end
-
-    attr_reader :id
-    attr_reader :label
-    attr_reader :created_at
-    attr_reader :modified_at
 	end
 end

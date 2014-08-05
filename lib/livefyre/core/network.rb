@@ -14,7 +14,9 @@ module Livefyre
 			@key = key
       @network_name = name.split('.')[0]
     end
+
     attr_reader :name
+    attr_reader :key
     attr_reader :network_name
 
 		def set_user_sync_url(url_template)
@@ -57,7 +59,7 @@ module Livefyre
 
       token_attributes['domain'] == @name \
 				&& token_attributes['user_id'] == DEFAULT_USER \
-      && token_attributes['expires'] >= Time.new.to_i
+        && token_attributes['expires'] >= Time.new.to_i
     end
 
     def get_site(site_id, site_key)

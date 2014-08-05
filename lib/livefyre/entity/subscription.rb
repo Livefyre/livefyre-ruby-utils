@@ -7,6 +7,11 @@ module Livefyre
       @created_at = created_at
     end
 
+    attr_reader :to
+    attr_reader :by
+    attr_reader :type
+    attr_reader :created_at
+
     def self.serialize_from_json(json)
       new(json['to'], json['by'], json['type'], json['createdAt'])
     end
@@ -18,11 +23,6 @@ module Livefyre
       end
       dict
     end
-
-    attr_reader :to
-    attr_reader :by
-    attr_reader :type
-    attr_reader :created_at
 
   end
 
