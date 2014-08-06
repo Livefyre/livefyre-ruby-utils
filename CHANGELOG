@@ -1,3 +1,15 @@
+=== 1.3.0 2014-07-30
+
+*** CAUTION: THIS VERSION HAS UPDATED METHODS THAT MAKE PREVIOUS FUNCTION CALLS OBSOLETE ***
+
+* Jumped from 1.1.0 to 1.3.0 to match other libraries.
+* Added personal stream and timeline support.
+* Updated most API to use SSL.
+* Added create_collection method.
+* Updated checksum formula to match other libraries.
+* Refactored core objects.
+* Updated create_collection_meta to take in a dict of optional params.
+
 === 1.1.4 2014-05-07
 
 * Added changelog.

@@ -53,10 +53,10 @@ site = network.get_site('site_id', 'site_key')
 ```
 
 Building a collection meta token:
-*The 'tags' and type' arguments are optional.*
+*The {options} argument is optional.*
 
 ```ruby
-site.build_collection_meta_token('title', 'article_id', 'url', 'tags', 'type')
+site.build_collection_meta_token('title', 'article_id', 'url', {options})
 ```
 
 Building a checksum:
@@ -78,7 +78,7 @@ To get a content collection's id:
 site.get_collection_id('article_id')
 ```
 
-## Documentation
+## Additional Documentation
 
 Located [here](http://answers.livefyre.com/developers/libraries).
 
