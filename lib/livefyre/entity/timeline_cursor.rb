@@ -1,4 +1,4 @@
-require 'livefyre/api/personalized_streams'
+require 'livefyre/api/personalized_stream'
 
 module Livefyre
 	class TimelineCursor
@@ -13,7 +13,7 @@ module Livefyre
     end
 
     def next(limit=@limit)
-      data = PersonalizedStreamsClient::get_timeline_stream(@core, @resource, limit, nil, @cursor_time)
+      data = PersonalizedStream::get_timeline_stream(@core, @resource, limit, nil, @cursor_time)
       cursor = data['meta']['cursor']
 
       @next = cursor['hasNext']
@@ -24,7 +24,7 @@ module Livefyre
     end
 
     def previous(limit=@limit)
-      data = PersonalizedStreamsClient::get_timeline_stream(@core, @resource, limit, @cursor_time, nil)
+      data = PersonalizedStream::get_timeline_stream(@core, @resource, limit, @cursor_time, nil)
       cursor = data['meta']['cursor']
 
       @previous = cursor['hasPrev']

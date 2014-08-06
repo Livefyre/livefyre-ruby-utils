@@ -7,7 +7,7 @@ require 'livefyre/entity/topic'
 require 'livefyre/entity/subscription'
 
 module Livefyre
-	class PersonalizedStreamsClient
+	class PersonalizedStream
 		# Topic API
 		def self.get_topic(core, topic_id)
 			url =  self.base_url(core) + self.topic_path(core, topic_id)
@@ -19,11 +19,11 @@ module Livefyre
     end
 
     def self.create_or_update_topic(core, topic_id, label)
-      PersonalizedStreamsClient::create_or_update_topics(core, { "#{topic_id}" => label })[0]
+      PersonalizedStream::create_or_update_topics(core, { "#{topic_id}" => label })[0]
     end
 
     def self.delete_topic(core, topic)
-      PersonalizedStreamsClient::delete_topics(core, [topic]) == 1
+      PersonalizedStream::delete_topics(core, [topic]) == 1
     end
 
 		# Multiple Topic API
