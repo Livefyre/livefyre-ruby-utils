@@ -5,6 +5,7 @@ require 'addressable/uri'
 
 require 'livefyre/entity/topic'
 require 'livefyre/entity/subscription'
+require 'livefyre/api/domain'
 
 module Livefyre
 	class PersonalizedStream
@@ -203,7 +204,7 @@ module Livefyre
 
 		# Stream API
 		def self.get_timeline_stream(core, resource, limit=50, t_until=nil, t_since=nil)
-			url = STREAM_BASE_URL + TIMELINE_PATH
+			url = self.stream_base_url(core) + TIMELINE_PATH
       url += "?resource=#{resource}&limit=#{limit}"
 
       if t_until != nil
@@ -220,10 +221,12 @@ module Livefyre
     private
 
     def self.base_url(core)
-      "https://#{core.network_name}.quill.fyre.co/api/v4"
+      "#{Domain::quill(core)}/api/v4"
     end
 
-    STREAM_BASE_URL = 'https://bootstrap.livefyre.com/api/v4'
+    def self.stream_base_url(core)
+      "#{Domain::bootstrap(core)}/api/v4"
+    end
 
     def self.topic_path(core, topic_id)
       "/#{Topic.generate_urn(core, topic_id)}/"

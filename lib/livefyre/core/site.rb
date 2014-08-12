@@ -5,6 +5,8 @@ require 'jwt'
 require 'rest-client'
 require 'addressable/uri'
 
+require 'livefyre/api/domain'
+
 module Livefyre
 	class Site
 		TYPE = %w(reviews sidenotes ratings counting liveblog livechat livecomments)
@@ -46,7 +48,7 @@ module Livefyre
 
 
     def create_collection(title, article_id, url, options={})
-      uri = "https://#{network_name}.quill.fyre.co/api/v3.0/site/#{@id}/collection/create/?sync=1"
+      uri = "#{Domain::quill(self)}/api/v3.0/site/#{@id}/collection/create/?sync=1"
       data = {
         articleId: article_id,
         collectionMeta: build_collection_meta_token(title, article_id, url, options),
@@ -65,7 +67,7 @@ module Livefyre
 
 		def get_collection_content(article_id)
 			response = RestClient.get(
-					"https://bootstrap.livefyre.com/bs3/#{@network.name}/#{@id}/#{Base64.encode64(article_id.to_s).chomp}/init",
+					"#{Domain::bootstrap(self)}/bs3/#{@network.name}/#{@id}/#{Base64.encode64(article_id.to_s).chomp}/init",
 					:accepts => :json
 				)
 			response.code == 200 ? JSON.parse(response) : nil

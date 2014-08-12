@@ -3,6 +3,7 @@ require 'jwt'
 require 'rest-client'
 
 require 'livefyre/core/site'
+require 'livefyre/api/domain'
 
 module Livefyre
 	class Network
@@ -12,18 +13,20 @@ module Livefyre
 		def initialize(name, key)
 			@name = name
 			@key = key
+      @ssl = true
       @network_name = name.split('.')[0]
     end
 
     attr_reader :name
     attr_reader :key
+    attr_accessor :ssl
     attr_reader :network_name
 
 		def set_user_sync_url(url_template)
 			raise ArgumentError, 'url_template should contain {id}' if !url_template.include?('{id}')
 			
 			response = RestClient.post(
-					"http://#{@name}",
+					"#{Domain::quill(self)}/",
 					{ actor_token: build_livefyre_token, pull_profile_url: url_template }
 				)
 			response.code == 204
@@ -31,7 +34,7 @@ module Livefyre
 
 		def sync_user(user_id)
 			response = RestClient.post(
-					"http://#{@name}/api/v3_0/user/#{user_id}/refresh",
+					"#{Domain::quill(self)}/api/v3_0/user/#{user_id}/refresh",
 					{ lftoken: build_livefyre_token }
 				)
 			response.code == 200
