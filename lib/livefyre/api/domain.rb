@@ -1,21 +1,26 @@
 module Livefyre
   class Domain
     def self.quill(core)
-      begin
-        ssl = core.ssl
-      rescue
-        ssl = core.network.ssl
-      end
-      ssl ? "https://#{core.network_name}.quill.fyre.co" : "http://quill.#{core.network_name}.fyre.co"
+      network = self.get_network_from_(core)
+      network.ssl ? "https://#{network.network_name}.quill.fyre.co" : "http://quill.#{network.name}"
     end
 
     def self.bootstrap(core)
+      network = self.get_network_from_(core)
+      network.ssl ? "https://#{network.network_name}.bootstrap.fyre.co" : "http://bootstrap.#{network.name}"
+    end
+    
+    private
+    
+    def self.get_network_from_(core)
       begin
-        ssl = core.ssl
+        network = core.site.network
       rescue
-        ssl = core.network.ssl
+        network = core.network
+      rescue
+        network = core
       end
-      ssl ? 'https://bootstrap.livefyre.com' : "http://bootstrap.#{core.network_name}.fyre.co"
+      network
     end
   end
 end

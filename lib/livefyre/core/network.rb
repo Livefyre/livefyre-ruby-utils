@@ -4,11 +4,14 @@ require 'rest-client'
 
 require 'livefyre/core/site'
 require 'livefyre/api/domain'
+require 'livefyre/exceptions/livefyre_exception'
 
 module Livefyre
 	class Network
 		DEFAULT_USER = 'system'
 		DEFAULT_EXPIRES = 86400
+
+    attr_accessor :name, :key, :ssl, :network_name
 
 		def initialize(name, key)
 			@name = name
@@ -17,19 +20,14 @@ module Livefyre
       @network_name = name.split('.')[0]
     end
 
-    attr_reader :name
-    attr_reader :key
-    attr_accessor :ssl
-    attr_reader :network_name
-
 		def set_user_sync_url(url_template)
 			raise ArgumentError, 'url_template should contain {id}' if !url_template.include?('{id}')
 			
 			response = RestClient.post(
 					"#{Domain::quill(self)}/",
 					{ actor_token: build_livefyre_token, pull_profile_url: url_template }
-				)
-			response.code == 204
+			)
+			raise LivefyreException, "Error contacting Livefyre. Status code: #{response.code} \n Reason: #{response.content}" if response.code != 204
 		end
 
 		def sync_user(user_id)
@@ -37,7 +35,8 @@ module Livefyre
 					"#{Domain::quill(self)}/api/v3_0/user/#{user_id}/refresh",
 					{ lftoken: build_livefyre_token }
 				)
-			response.code == 200
+			raise LivefyreException, "Error contacting Livefyre. Status code: #{response.code} \n Reason: #{response.content}" if response.code != 200
+			self
 		end
 
 		def build_livefyre_token
@@ -48,10 +47,10 @@ module Livefyre
 			raise ArgumentError, 'user_id must be alphanumeric' if !(user_id =~ /\A\p{Alnum}+\z/)
 
 			JWT.encode({
-					domain: @name,
-      user_id: user_id,
-          display_name: display_name,
-          expires: Time.new.to_i + expires},
+  					domain: @name,
+  					user_id: user_id,
+            display_name: display_name,
+            expires: Time.new.to_i + expires},
           @key)
     end
 

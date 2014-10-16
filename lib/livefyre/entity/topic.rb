@@ -2,17 +2,15 @@ module Livefyre
 	class Topic
     TOPIC_IDENTIFIER = ':topic='
 
+    attr_accessor :id, :label
+    attr_reader :created_at, :modified_at
+    
     def initialize(id, label, created_at=nil, modified_at=nil)
       @id = id
       @label = label
       @created_at = created_at
       @modified_at = modified_at
     end
-
-    attr_reader :id
-    attr_reader :label
-    attr_reader :created_at
-    attr_reader :modified_at
 
     def self.create(core, id, label)
       new(Topic::generate_urn(core, id), label)

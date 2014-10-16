@@ -2,6 +2,9 @@ require 'livefyre/api/personalized_stream'
 
 module Livefyre
 	class TimelineCursor
+    attr_reader :core, :resource, :next, :previous
+    attr_accessor :limit, :date
+
     def initialize(core, resource, limit, date)
       @core = core
       @resource = resource

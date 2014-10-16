@@ -1,16 +1,13 @@
 module Livefyre
 	class Subscription
+    attr_accessor :to, :by, :type, :created_at
+    
     def initialize(to, by, type, created_at=nil)
       @to = to
       @by = by
       @type = type
       @created_at = created_at
     end
-
-    attr_reader :to
-    attr_reader :by
-    attr_reader :type
-    attr_reader :created_at
 
     def self.serialize_from_json(json)
       new(json['to'], json['by'], json['type'], json['createdAt'])

@@ -6,6 +6,7 @@ require 'addressable/uri'
 require 'livefyre/entity/topic'
 require 'livefyre/entity/subscription'
 require 'livefyre/api/domain'
+require 'livefyre/exceptions/livefyre_exception'
 
 module Livefyre
 	class PersonalizedStream
@@ -81,18 +82,18 @@ module Livefyre
 		end
 
 		# Collection Topic API
-		def self.get_collection_topics(site, collection_id)
-			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
+		def self.get_collection_topics(collection)
+			url = self.base_url(collection) + self.multiple_topic_path(collection)
 
-      response = RestClient.get(url, self.get_headers(site))
+      response = RestClient.get(url, self.get_headers(collection))
       data = JSON.parse(response)['data']
 
       data.has_key?('topicIds') ? data['topicIds'] : []
 		end
 
-		def self.add_collection_topics(site, collection_id, topics)
-			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
-      headers = self.get_headers(site)
+		def self.add_collection_topics(collection, topics)
+			url = self.base_url(collection) + self.multiple_topic_path(collection)
+      headers = self.get_headers(collection)
       headers[:content_type] = :json
       form = {topicIds: self.get_ids(topics)}
 
@@ -102,9 +103,9 @@ module Livefyre
       data.has_key?('added') ? data['added'] : 0
 		end
 
-		def self.replace_collection_topics(site, collection_id, topics)
-			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
-      headers = self.get_headers(site)
+		def self.replace_collection_topics(collection, topics)
+			url = self.base_url(collection) + self.multiple_topic_path(collection)
+      headers = self.get_headers(collection)
       headers[:content_type] = :json
       form = {topicIds: self.get_ids(topics)}
 
@@ -114,9 +115,9 @@ module Livefyre
       return data.has_key?('added') ? data['added'] : 0, data.has_key?('removed') ? data['removed'] : 0
 		end
 
-		def self.remove_collection_topics(site, collection_id, topics)
-			url = self.base_url(site) + self.collection_topics_path(site, collection_id)
-      headers = self.get_headers(site)
+		def self.remove_collection_topics(collection, topics)
+			url = self.base_url(collection) + self.multiple_topic_path(collection)
+      headers = self.get_headers(collection)
       headers[:content_type] = :json
       form = {delete: self.get_ids(topics)}
 
@@ -234,10 +235,6 @@ module Livefyre
 
     def self.multiple_topic_path(core)
       "/#{core.get_urn}:topics/"
-    end
-
-    def self.collection_topics_path(site, collection_id)
-      "/#{site.get_urn}:collection=#{collection_id}:topics/"
     end
 
     def self.user_subscription_path(user_urn)
