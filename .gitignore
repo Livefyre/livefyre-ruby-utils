@@ -15,9 +15,9 @@ spec/reports
 test/tmp
 test/version_tmp
 tmp
+.idea
+*.iml
 
-.idea/livefyre-ruby-utils.iml
+.idea/misc.xml
 
-.idea/workspace.xml
-
-.idea/livefyre-ruby-utils.iml
+.idea/modules.xml

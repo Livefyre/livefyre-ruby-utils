@@ -13,17 +13,12 @@ module Livefyre
       new(json['to'], json['by'], json['type'], json['createdAt'])
     end
 
-    def to_dict
+    def to_hash
       dict = { :to => @to, :by => @by, :type => @type }
       if @created_at != nil
         dict[:createdAt] = @created_at
       end
       dict
     end
-
-  end
-
-  module SubscriptionType
-    PERSONAL_STREAM = 1
   end
 end

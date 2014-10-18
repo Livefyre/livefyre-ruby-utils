@@ -7,7 +7,7 @@ RSpec.configure do |c|
   c.filter_run_excluding :broken => true
 end
 
-describe Livefyre::Network, :broken => true do
+describe Livefyre::Network do
   before(:each) do
     @network = Livefyre.get_network(NETWORK_NAME, NETWORK_KEY)
     @site = @network.get_site(SITE_ID, SITE_KEY)

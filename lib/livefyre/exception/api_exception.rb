@@ -1,7 +1,7 @@
 module Livefyre
-  class LivefyreError < StandardError
+  class ApiException < LivefyreException
     attr_reader :object
-  
+
     def initialize(object)
       @object = object
     end

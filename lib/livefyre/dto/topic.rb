@@ -2,8 +2,7 @@ module Livefyre
 	class Topic
     TOPIC_IDENTIFIER = ':topic='
 
-    attr_accessor :id, :label
-    attr_reader :created_at, :modified_at
+    attr_accessor :id, :label, :created_at, :modified_at
     
     def initialize(id, label, created_at=nil, modified_at=nil)
       @id = id
@@ -20,7 +19,7 @@ module Livefyre
       new(json['id'], json['label'], json['createdAt'], json['modifiedAt'])
     end
 
-    def to_dict
+    def to_hash
       json = { :id => @id, :label => @label }
       if @created_at != nil
         json[:createdAt] = @created_at
@@ -34,10 +33,10 @@ module Livefyre
     end
 
     def self.generate_urn(core, id)
-      "#{core.get_urn}#{TOPIC_IDENTIFIER}#{id}"
+      "#{core.urn}#{TOPIC_IDENTIFIER}#{id}"
     end
 
-    def get_truncated_id
+    def truncated_id
       @id[@id.index(TOPIC_IDENTIFIER) + TOPIC_IDENTIFIER.length]
     end
 	end

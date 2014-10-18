@@ -1,3 +1,5 @@
+require 'addressable/uri'
+
 module Livefyre
   class LivefyreUtil
     def self.uri?(string)
@@ -7,6 +9,16 @@ module Livefyre
       false
     rescue Addressable::URI::InvalidURIError
       false
+    end
+    
+    def self.get_network_from_core(core)
+      if core.class.name == 'Livefyre::Collection'
+        return core.site.network
+      elsif core.class.name == 'Livefyre::Site'
+        return core.network
+      else
+        return core
+      end
     end
   end
 end
