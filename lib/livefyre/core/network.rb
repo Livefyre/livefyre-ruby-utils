@@ -3,7 +3,7 @@ require 'rest-client'
 
 require 'livefyre/api/domain'
 require 'livefyre/core/site'
-require 'livefyre/exception/api_exception'
+require 'livefyre/exceptions/api_exception'
 require 'livefyre/model/network_data'
 require 'livefyre/validator/network_validator'
 

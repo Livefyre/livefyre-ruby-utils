@@ -5,7 +5,7 @@ require 'rest-client'
 require 'livefyre/api/domain'
 require 'livefyre/dto/topic'
 require 'livefyre/dto/subscription'
-require 'livefyre/exception/livefyre_exception'
+require 'livefyre/exceptions/livefyre_exception'
 require 'livefyre/type/subscription_type'
 require 'livefyre/utils/livefyre_util'
 

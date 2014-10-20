@@ -1,4 +1,4 @@
-require 'livefyre/exception/livefyre_exception'
+require 'livefyre/exceptions/livefyre_exception'
 
 module Livefyre
   class CollectionData

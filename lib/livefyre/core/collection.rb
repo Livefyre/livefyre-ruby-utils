@@ -5,7 +5,7 @@ require 'jwt'
 require 'rest-client'
 
 require 'livefyre/api/domain'
-require 'livefyre/exception/api_exception'
+require 'livefyre/exceptions/api_exception'
 require 'livefyre/model/collection_data'
 require 'livefyre/utils/livefyre_util'
 require 'livefyre/validator/collection_validator'
