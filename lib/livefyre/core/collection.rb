@@ -19,7 +19,7 @@ module Livefyre
       @data = data
     end
 
-    def init(site, type, title, article_id, url)
+    def self.init(site, type, title, article_id, url)
       data = CollectionData.new(type, title, article_id, url)
       Collection.new(site, CollectionValidator::validate(data))
     end
@@ -27,7 +27,7 @@ module Livefyre
     def create_or_update
       response = invoke_collection_api('create')
       if response.code == 200
-        @collection_id = JSON.parse(response)['data']['collectionId']
+        @data.id = JSON.parse(response)['data']['collectionId']
         return self
       elsif response.code == 409
         response = invoke_collection_api('update')
@@ -35,7 +35,7 @@ module Livefyre
           return self
         end
       end
-      raise ApiException, "Error creating Livefyre collection. Status code: #{response.code} \n Reason: #{response.content}" #TODO
+      raise ApiException.new(self, response.code)
     end
 
     def build_collection_meta_token
@@ -45,8 +45,7 @@ module Livefyre
     end
 
     def build_checksum
-      # attr_json = "{" + @data.as_hash.sort.map{|k,v| "\"#{k.inspect}\":\"#{v.inspect}\""}.join(",") + "}"
-      attr_json = @data.as_hash.sort.to_json
+      attr_json = '{' + @data.as_hash.sort.map{|k,v| "#{k.inspect}:#{v.inspect}"}.join(',') + '}'
       Digest::MD5.new.update(attr_json).hexdigest
     end
 
@@ -55,7 +54,7 @@ module Livefyre
           "#{Domain::bootstrap(self)}/bs3/#{@site.network.data.name}/#{@site.data.id}/#{Base64.encode64(@data.article_id.to_s).chomp}/init",
           :accepts => :json
         )
-      raise ApiException, '' if response.code != 200 #TODO
+      raise ApiException.new(self, response.code) if response.code >= 400
       JSON.parse(response)
     end
 
@@ -66,12 +65,15 @@ module Livefyre
     def is_network_issued
       network_urn = @site.network.urn
 
-      @data.topics.each do |topic|
-        topic_id = topic.id
-        if topic_id.start_with?(network_urn) && !topic_id.sub(network_urn, '').start_with?(':site=')
-          return true
+      if @data.topics
+        @data.topics.each do |topic|
+          topic_id = topic.id
+          if topic_id.start_with?(network_urn) && !topic_id.sub(network_urn, '').start_with?(':site=')
+            return true
+          end
         end
       end
+
       false
     end
     
@@ -84,7 +86,7 @@ module Livefyre
         :collectionMeta => build_collection_meta_token,
         :checksum => build_checksum
       }
-      headers = {:accepts => :json, :content_type => :json}
+      headers = { :accepts => :json, :content_type => :json }
       RestClient.post(uri, data.to_json, headers)
     end
   end

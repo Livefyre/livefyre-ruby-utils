@@ -1,11 +1,8 @@
 # coding: utf-8
 
+require 'livefyre/spec_helper'
 require 'livefyre'
 require 'jwt'
-
-RSpec.configure do |c|
-  c.filter_run_excluding :broken => true
-end
 
 describe Livefyre::LivefyreUtil do
   it 'should check for valid and invalid urls' do

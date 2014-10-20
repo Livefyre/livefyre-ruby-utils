@@ -11,13 +11,13 @@ module Livefyre
       @data = data
     end
     
-    def init(core, resource, limit, date)
+    def self.init(core, resource, limit, date)
       data = CursorData.new(resource, limit, date)
       TimelineCursor.new(core, CursorValidator::validate(data))
     end
 
     def next
-      data = PersonalizedStream::get_timeline_stream(@core, @data, true)
+      data = PersonalizedStream::get_timeline_stream(self, true)
       cursor = data['meta']['cursor']
 
       @data.next = cursor['hasNext']
@@ -30,7 +30,7 @@ module Livefyre
     end
 
     def previous
-      data = PersonalizedStream::get_timeline_stream(@core, @data, false)
+      data = PersonalizedStream::get_timeline_stream(self, false)
       cursor = data['meta']['cursor']
 
       @data.previous = cursor['hasPrev']

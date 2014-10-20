@@ -12,7 +12,7 @@ module Livefyre
       @data = data
     end
 
-    def init(network, id, key)
+    def self.init(network, id, key)
       data = SiteData.new(id, key)
       Site.new(network, SiteValidator::validate(data))
     end
@@ -46,7 +46,7 @@ module Livefyre
     end
 
     def build_collection(type, title, article_id, url)
-      Collection.init(self, type, title, article_id, url)
+      Collection::init(self, type, title, article_id, url)
     end
 
 		def urn

@@ -1,13 +1,10 @@
+require 'livefyre/spec_helper'
 require 'livefyre'
 require 'jwt'
 require 'livefyre/api/personalized_stream'
 require 'livefyre/factory/cursor_factory'
 
-RSpec.configure do |c|
-  c.filter_run_excluding :broken => true
-end
-
-describe Livefyre::Network do
+describe Livefyre::PersonalizedStream do
   before(:each) do
     @network = Livefyre.get_network(NETWORK_NAME, NETWORK_KEY)
     @site = @network.get_site(SITE_ID, SITE_KEY)
@@ -56,10 +53,12 @@ describe Livefyre::Network do
 
   it 'should test that personalized streams api work for collections' do
     topics = Livefyre::PersonalizedStream::create_or_update_topics(@site, {1 => 'EINS', 2 => 'ZWEI'})
+    name = "RUBY PSSTREAM TEST #{Time.new}"
+    collection = @site.build_livecomments_collection(name, name, URL).create_or_update
 
-    Livefyre::PersonalizedStream::add_collection_topics(@site, COLLECTION_ID, topics)
-    Livefyre::PersonalizedStream::get_collection_topics(@site, COLLECTION_ID)
-    Livefyre::PersonalizedStream::replace_collection_topics(@site, COLLECTION_ID, [topics[1]])
-    Livefyre::PersonalizedStream::remove_collection_topics(@site, COLLECTION_ID, [topics[1]])
+    Livefyre::PersonalizedStream::add_collection_topics(collection, topics)
+    Livefyre::PersonalizedStream::get_collection_topics(collection)
+    Livefyre::PersonalizedStream::replace_collection_topics(collection, [topics[1]])
+    Livefyre::PersonalizedStream::remove_collection_topics(collection, [topics[1]])
   end
 end

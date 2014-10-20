@@ -16,7 +16,7 @@ module Livefyre
 			url =  self.base_url(core) + self.topic_path(core, topic_id)
 
 			response = RestClient.get(url, self.get_headers(core))
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       Topic::serialize_from_json(data['topic'])
     end
@@ -35,7 +35,7 @@ module Livefyre
       url += "?limit=#{limit}&offset=#{offset}"
 
       response = RestClient.get(url, self.get_headers(core))
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       topics = []
       data['topics'].each do |topic|
@@ -65,7 +65,7 @@ module Livefyre
       end
 
       response = RestClient.post(url, { :topics => topics_json }.to_json, headers)
-      JSON.parse(response)['data']
+      self.analyze_response(response)
 
       return topics
 		end
@@ -77,7 +77,7 @@ module Livefyre
       form = { :delete => self.get_ids(topics) }
 
       response = RestClient.patch(url, form.to_json, headers)
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       data.has_key?('deleted') ? data['deleted'] : 0
 		end
@@ -87,7 +87,7 @@ module Livefyre
 			url = self.base_url(collection) + self.multiple_topic_path(collection)
 
       response = RestClient.get(url, self.get_headers(collection))
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       data.has_key?('topicIds') ? data['topicIds'] : []
 		end
@@ -99,7 +99,7 @@ module Livefyre
       form = { :topicIds => self.get_ids(topics) }
 
       response = RestClient.post(url, form.to_json, headers)
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       data.has_key?('added') ? data['added'] : 0
 		end
@@ -111,7 +111,7 @@ module Livefyre
       form = { :topicIds => self.get_ids(topics) }
 
       response = RestClient.put(url, form.to_json, headers)
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       return data.has_key?('added') ? data['added'] : 0, data.has_key?('removed') ? data['removed'] : 0
 		end
@@ -123,7 +123,7 @@ module Livefyre
       form = { :delete => self.get_ids(topics) }
 
       response = RestClient.patch(url, form.to_json, headers)
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       data.has_key?('removed') ? data['removed'] : 0
 		end
@@ -133,7 +133,7 @@ module Livefyre
 			url = self.base_url(network) + self.user_subscription_path(network.get_urn_for_user(user_id))
 
       response = RestClient.get(url, self.get_headers(network))
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       subscriptions = []
       if data.has_key?('subscriptions')
@@ -155,7 +155,7 @@ module Livefyre
       form = { :subscriptions => self.to_subscriptions(topics, user_urn) }
 
       response = RestClient.post(url, form.to_json, headers)
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       data.has_key?('added') ? data['added'] : 0
 		end
@@ -170,7 +170,7 @@ module Livefyre
       form = { :subscriptions => self.to_subscriptions(topics, user_urn) }
 
       response = RestClient.put(url, form.to_json, headers)
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       return data.has_key?('added') ? data['added'] : 0, data.has_key?('removed') ? data['removed'] : 0
 		end
@@ -185,7 +185,7 @@ module Livefyre
       form = { :delete => self.to_subscriptions(topics, user_urn) }
 
       response = RestClient.patch(url, form.to_json, headers)
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       data.has_key?('removed') ? data['removed'] : 0
 		end
@@ -195,7 +195,7 @@ module Livefyre
       url += "?limit=#{limit}&offset=#{offset}"
 
       response = RestClient.get(url, self.get_headers(network))
-      data = JSON.parse(response)['data']
+      data = self.analyze_response(response)
 
       subscriptions = []
       if data.has_key?('subscriptions')
@@ -208,17 +208,18 @@ module Livefyre
 		end
 
 		# Stream API
-		def self.get_timeline_stream(core, data, is_next)
-			url = self.stream_base_url(core) + TIMELINE_PATH
-      url += "?resource=#{data.resource}&limit=#{data.limit}"
+		def self.get_timeline_stream(cursor, is_next)
+			url = self.stream_base_url(cursor.core) + TIMELINE_PATH
+      url += "?resource=#{cursor.data.resource}&limit=#{cursor.data.limit}"
 
       if is_next
-        url += "&since=#{data.cursor_time}"
+        url += "&since=#{cursor.data.cursor_time}"
       else
-        url += "&until=#{data.cursor_time}"
+        url += "&until=#{cursor.data.cursor_time}"
       end
 
-      response = RestClient.get(url, self.get_headers(core))
+      response = RestClient.get(url, self.get_headers(cursor.core))
+      raise ApiException.new(self, response.code) if response.code >= 400
       JSON.parse(response)
     end
 
@@ -270,6 +271,11 @@ module Livefyre
         subscriptions << Subscription.new(topic.id, user, SubscriptionType::PERSONAL_STREAM).to_hash
       end
       subscriptions
+    end
+
+    def self.analyze_response(response)
+      raise ApiException.new(self, response.code) if response.code >= 400
+      JSON.parse(response)['data']
     end
 	end
 end

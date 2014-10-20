@@ -1,11 +1,8 @@
 # coding: utf-8
 
+require 'livefyre/spec_helper'
 require 'livefyre'
 require 'jwt'
-
-RSpec.configure do |c|
-  c.filter_run_excluding :broken => true
-end
 
 describe Livefyre::Collection do
   before(:each) do
@@ -13,42 +10,45 @@ describe Livefyre::Collection do
   end
 
   it 'should raise ArgumentError if url is not a valid url for collection' do
-    expect{ @site.build_collection('test', 'test', 'blah.com/', 'test') }.to raise_error(ArgumentError)
+    expect{ @site.build_livecomments_collection('test', 'test', 'blah.com/') }.to raise_error(ArgumentError)
   end
 
   it 'should raise ArgumentError if title is more than 255 characters for collection' do
-    expect{ @site.build_collection('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456', 'test', 'http://test.com', 'test') }.to raise_error(ArgumentError)
+    expect{ @site.build_livecomments_collection('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456', 'test', 'http://test.com', 'test') }.to raise_error(ArgumentError)
   end
 
   it 'should raise ArgumentError if not a valid type is passed in when building a collection' do
-    expect{ @site.build_collection('', '', 'http://livefyre.com', {type: 'bad type'}) }.to raise_error(ArgumentError)
+    expect{ @site.build_collection('bad_type', '', '', 'http://livefyre.com') }.to raise_error(ArgumentError)
   end
 
   it 'should check type and assign them to the correct field in the collection meta token' do
-    @token = @site.build_collection('', '', 'http://livefyre.com', {tags: '', type: 'reviews'}).build_collection_meta_token
+    @token = @site.build_reviews_collection('title', 'article_id', 'http://livefyre.com').build_collection_meta_token
     @decoded = JWT.decode(@token, SITE_KEY)
 
     expect(@decoded['type']).to eq('reviews')
 
-    @token = @site.build_collection('', '', 'http://livefyre.com', {type: 'liveblog'}).build_collection_meta_token
+    @token = @site.build_liveblog_collection('title', 'article_id', 'http://livefyre.com').build_collection_meta_token
     @decoded = JWT.decode(@token, SITE_KEY)
 
     expect(@decoded['type']).to eq('liveblog')
   end
 
   it 'should return a collection meta token' do
-    expect{ @site.build_collection('title', 'article_id', 'https://www.url.com', 'tags').build_collection_meta_token }.to be_true
+    expect{ @site.build_livecomments_collection('title', 'article_id', 'https://www.url.com').build_collection_meta_token }.to be_true
   end
 
   it 'should return a valid checksum' do
-    expect(@site.build_collection('title', 'https://www.url.com', 'tags').build_checksum).to eq('4464458a10c305693b5bf4d43a384be7')
+    collection = @site.build_livecomments_collection('title', 'articleId', 'http://livefyre.com')
+    collection.data.tags = 'tags'
+    expect(collection.build_checksum).to eq('8bcfca7fb2187b1dcb627506deceee32')
   end
 
-  it 'should test basic site api', :broken => true do
-    @site.get_collection_content(ARTICLE_ID)
-
+  it 'should test basic site api' do
     name = "RubyCreateCollection#{Time.new}"
-    id = @site.create_collection(name, name, 'http://answers.livefyre.com/RUBY')
-    expect(@site.get_collection_id(name)).to eq(id)
+
+    collection = @site.build_livecomments_collection(name, name, URL).create_or_update
+    content = collection.get_collection_content
+
+    expect(collection.data.id).to eq(content['collectionSettings']['collectionId'])
   end
 end

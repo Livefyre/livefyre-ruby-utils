@@ -31,7 +31,7 @@ module Livefyre
 					"#{Domain::quill(self)}/",
 					{ :actor_token => build_livefyre_token, :pull_profile_url => url_template }
 			)
-			raise ApiException, "Error contacting Livefyre. Status code: #{response.code} \n Reason: #{response.content}" if response.code != 204 #TODO
+      raise ApiException.new(self, response.code) if response.code >= 400
 		end
 
 		def sync_user(user_id)
@@ -39,7 +39,7 @@ module Livefyre
 					"#{Domain::quill(self)}/api/v3_0/user/#{user_id}/refresh",
 					{ :lftoken => build_livefyre_token }
 				)
-			raise ApiException, "Error contacting Livefyre. Status code: #{response.code} \n Reason: #{response.content}" if response.code != 200 #TODO
+      raise ApiException.new(self, response.code) if response.code >= 400
 			self
 		end
 
@@ -64,7 +64,7 @@ module Livefyre
     end
 
     def get_site(site_id, site_key)
-      Site.init(self, site_id, site_key)
+      Site::init(self, site_id, site_key)
     end
 
     def urn

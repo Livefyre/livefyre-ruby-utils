@@ -1,26 +1,31 @@
-require 'base64'
-require 'digest'
-require 'json'
-require 'jwt'
-require 'rest-client'
-require 'addressable/uri'
-
 require 'livefyre/utils/livefyre_util'
 
 module Livefyre
   class CollectionValidator
     def self.validate(data)
-      raise ArgumentError, 'provided url is not a valid url' if !LivefyreUtil::uri?(url)
-      raise ArgumentError, 'title length should be under 255 char' if title.length > 255
+      reason = ''
 
-      if options.has_key?(:type) && !TYPE.include?(options[:type])
-        raise ArgumentError, "type is not a recognized type. should be in #{TYPE}, or an empty string"
+      reason += '\n Article id is null or blank' if data.article_id.to_s.empty?
+
+      if data.title.to_s.empty?
+        reason += '\n Title is null or blank'
+      elsif data.title.length > 255
+        reason += '\n Title is longer than 255 characters.'
       end
-      if options.has_key?(:topics)
-        @network_issued = check_topics(site.network.get_urn, options[:topics])
-      else
-        @network_issued = false
+
+      if data.url.to_s.empty?
+        reason += '\n URL is null or blank.'
+      elsif !LivefyreUtil::uri?(data.url)
+        reason += '\n URL is not a valid url. see http://www.ietf.org/rfc/rfc2396.txt'
       end
+
+      if data.type == nil
+        reason += '\n Type cannot be nil.'
+      elsif not CollectionType.const_defined?(data.type.upcase)
+        reason += '\n Type must be of valid, recognized type. See CollectionType.'
+      end
+
+      raise ArgumentError, "Problems with your collection input: #{reason}" if reason.length > 0
 
       data
     end
