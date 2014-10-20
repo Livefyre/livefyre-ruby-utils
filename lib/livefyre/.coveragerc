@@ -1,0 +1,4 @@
+[report]
+omit =
+    */spec/*
+    */lib/livefyre/exception/*
