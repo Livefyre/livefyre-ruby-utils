@@ -38,4 +38,9 @@ describe Livefyre::Network do
   it 'should get the correct network name' do
     expect(@network.network_name).to eq(NETWORK_NAME.split('.')[0])
   end
+
+  it 'should test network api calls' do
+    @network.set_user_sync_url(URL+'/{id}')
+    @network.sync_user(USER_ID)
+  end
 end
