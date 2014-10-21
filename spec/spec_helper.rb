@@ -30,4 +30,5 @@ rescue
   ARTICLE_ID = ENV['ARTICLE_ID'] || '<ARTICLE-ID>'
 end
 
+TITLE = 'RubyTest'
 URL = 'http://answers.livefyre.com/RUBY'

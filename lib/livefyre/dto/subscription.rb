@@ -1,3 +1,5 @@
+require 'json'
+
 module Livefyre
 	class Subscription
     attr_accessor :to, :by, :type, :created_at
@@ -13,12 +15,16 @@ module Livefyre
       new(json['to'], json['by'], json['type'], json['createdAt'])
     end
 
+    def to_json(options = {})
+      to_hash.to_json(options)
+    end
+
     def to_hash
-      dict = { :to => @to, :by => @by, :type => @type }
+      hash = { :to => @to, :by => @by, :type => @type }
       if @created_at != nil
-        dict[:createdAt] = @created_at
+        hash[:createdAt] = @created_at
       end
-      dict
+      hash
     end
   end
 end

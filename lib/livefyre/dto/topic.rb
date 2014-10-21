@@ -1,3 +1,5 @@
+require 'json'
+
 module Livefyre
 	class Topic
     TOPIC_IDENTIFIER = ':topic='
@@ -15,21 +17,25 @@ module Livefyre
       new(Topic::generate_urn(core, id), label)
     end
 
+    def to_json(options = {})
+      to_hash.to_json(options)
+    end
+
     def self.serialize_from_json(json)
       new(json['id'], json['label'], json['createdAt'], json['modifiedAt'])
     end
 
     def to_hash
-      json = { :id => @id, :label => @label }
+      hash = { :id => @id, :label => @label }
       if @created_at != nil
-        json[:createdAt] = @created_at
+        hash[:createdAt] = @created_at
       end
 
       if @modified_at != nil
-        json[:modifiedAt] = @modified_at
+        hash[:modifiedAt] = @modified_at
       end
 
-      json
+      hash
     end
 
     def self.generate_urn(core, id)

@@ -1,4 +1,4 @@
-require 'livefyre/spec_helper'
+require 'spec_helper'
 require 'livefyre'
 require 'jwt'
 require 'livefyre/api/personalized_stream'
@@ -10,14 +10,36 @@ describe Livefyre::PersonalizedStream do
     @site = @network.get_site(SITE_ID, SITE_KEY)
   end
 
-  it 'should test that personalized streams api work for topics' do
+  it 'should test that personalized streams topic api work for networks' do
     Livefyre::PersonalizedStream::create_or_update_topic(@network, 1, 'EINS')
     topic = Livefyre::PersonalizedStream::get_topic(@network, 1)
-    Livefyre::PersonalizedStream::delete_topic(@network, topic).should == true
+    expect(Livefyre::PersonalizedStream::delete_topic(@network, topic)).to be true
 
     Livefyre::PersonalizedStream::create_or_update_topics(@network, {1 => 'EINS', 2 => 'ZWEI'})
     topics = Livefyre::PersonalizedStream::get_topics(@network)
+
+    name = "RUBY PSSTREAM TEST #{Time.new}"
+    collection = @site.build_livecomments_collection(name, name, URL)
+    collection.data.topics = topics
+    collection.create_or_update
+
     Livefyre::PersonalizedStream::delete_topics(@network, topics)
+  end
+
+  it 'should test that personalized streams topic api work for sites' do
+    Livefyre::PersonalizedStream::create_or_update_topic(@site, 1, 'EINS')
+    topic = Livefyre::PersonalizedStream::get_topic(@site, 1)
+    expect(Livefyre::PersonalizedStream::delete_topic(@site, topic)).to be true
+
+    Livefyre::PersonalizedStream::create_or_update_topics(@site, {1 => 'EINS', 2 => 'ZWEI'})
+    topics = Livefyre::PersonalizedStream::get_topics(@site)
+
+    name = "RUBY PSSTREAM TEST #{Time.new}"
+    collection = @site.build_livecomments_collection(name, name, URL)
+    collection.data.topics = topics
+    collection.create_or_update
+
+    Livefyre::PersonalizedStream::delete_topics(@site, topics)
   end
 
   it 'should test that personalized streams api work for subscriptions' do
@@ -39,16 +61,6 @@ describe Livefyre::PersonalizedStream do
     cursor.previous
 
     Livefyre::PersonalizedStream::delete_topic(@network, topic)
-  end
-
-  it 'should test that personalized streams api work for topics' do
-    Livefyre::PersonalizedStream::create_or_update_topic(@site, 1, 'EINS')
-    topic = Livefyre::PersonalizedStream::get_topic(@site, 1)
-    Livefyre::PersonalizedStream::delete_topic(@site, topic).should == true
-
-    Livefyre::PersonalizedStream::create_or_update_topics(@site, {1 => 'EINS', 2 => 'ZWEI'})
-    topics = Livefyre::PersonalizedStream::get_topics(@site)
-    Livefyre::PersonalizedStream::delete_topics(@site, topics)
   end
 
   it 'should test that personalized streams api work for collections' do
