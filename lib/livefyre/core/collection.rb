@@ -53,7 +53,7 @@ module Livefyre
       response = RestClient.get(
           "#{Domain::bootstrap(self)}/bs3/#{@site.network.data.name}/#{@site.data.id}/#{Base64.encode64(@data.article_id.to_s).chomp}/init",
           :accepts => :json
-        )
+        ){|response, request, result| response }
       raise ApiException.new(self, response.code) if response.code >= 400
       JSON.parse(response)
     end
@@ -87,7 +87,7 @@ module Livefyre
         :checksum => build_checksum
       }
       headers = { :accepts => :json, :content_type => :json }
-      RestClient.post(uri, data.to_json, headers)
+      RestClient.post(uri, data.to_json, headers){|response, request, result| response }
     end
   end
 end

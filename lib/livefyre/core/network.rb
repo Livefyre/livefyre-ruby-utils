@@ -30,7 +30,7 @@ module Livefyre
 			response = RestClient.post(
 					"#{Domain::quill(self)}/",
 					{ :actor_token => build_livefyre_token, :pull_profile_url => url_template }
-			)
+			){|response, request, result| response }
       raise ApiException.new(self, response.code) if response.code >= 400
 		end
 
@@ -38,7 +38,7 @@ module Livefyre
 			response = RestClient.post(
 					"#{Domain::quill(self)}/api/v3_0/user/#{user_id}/refresh",
 					{ :lftoken => build_livefyre_token }
-				)
+				){|response, request, result| response }
       raise ApiException.new(self, response.code) if response.code >= 400
 			self
 		end

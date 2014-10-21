@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'livefyre'
 require 'jwt'
 require 'livefyre/dto/topic'
+require 'livefyre/exceptions/livefyre_exception'
 
 describe Livefyre::Collection do
   before(:each) do
@@ -13,8 +14,7 @@ describe Livefyre::Collection do
     expect{ @site.build_livecomments_collection(TITLE, '', URL) }.to raise_error(ArgumentError)
     expect{ @site.build_livecomments_collection(TITLE, ARTICLE_ID, '') }.to raise_error(ArgumentError)
 
-    expect{ @site.build_livecomments_collection(nil, nil, nil) }.to raise_error(ArgumentError)
-
+    expect{ @site.build_collection(nil, nil, nil) }.to raise_error(ArgumentError)
   end
 
   it 'should raise ArgumentError if url is not a valid url for collection' do
@@ -63,6 +63,11 @@ describe Livefyre::Collection do
     expect(collection.is_network_issued).to be true
   end
 
+  it 'should throw an error when trying to retrieve collection id when it is not set' do
+    collection = @site.build_livecomments_collection(TITLE, ARTICLE_ID, URL)
+    expect{ collection.data.id }.to raise_error(Livefyre::LivefyreException)
+  end
+
   it 'should product the correct urn for a collection' do
     collection = @site.build_livecomments_collection(TITLE, ARTICLE_ID, URL)
     collection.data.id = 1
@@ -74,6 +79,9 @@ describe Livefyre::Collection do
 
     collection = @site.build_livecomments_collection(name, name, URL).create_or_update
     content = collection.get_collection_content
+
+    collection.data.title+='super'
+    collection.create_or_update
 
     expect(collection.data.id).to eq(content['collectionSettings']['collectionId'])
   end
