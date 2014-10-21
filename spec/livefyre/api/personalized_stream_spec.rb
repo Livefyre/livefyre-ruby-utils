@@ -12,6 +12,10 @@ describe Livefyre::PersonalizedStream do
     @site = @network.get_site(SITE_ID, SITE_KEY)
   end
 
+  it 'should throw an exception if topic label does not fit the criteria' do
+    expect{ PersonalizedStream::create_or_update_topic(@network, 1, '1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890') }.to raise_error(ArgumentError)
+  end
+
   it 'should test that personalized streams topic api work for networks' do
     PersonalizedStream::create_or_update_topic(@network, 1, 'EINS')
     topic = PersonalizedStream::get_topic(@network, 1)
