@@ -1,6 +1,7 @@
-test:
+dependencies:
   pre:
   - gem install bundler #temporary as circle uses 1.6.5 at the moment
+test:
   override:
   - bundle exec rspec spec
 
