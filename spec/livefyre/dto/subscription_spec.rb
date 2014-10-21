@@ -2,9 +2,11 @@ require 'spec_helper'
 require 'json'
 require 'livefyre/dto/subscription'
 
+include Livefyre
+
 describe Livefyre::Subscription do
   it 'should correctly form a hash' do
-    sub = Livefyre::Subscription.new('a', 'b', 'c')
+    sub = Subscription.new('a', 'b', 'c')
     h = sub.to_hash
     expect(h[:to]).to eq('a')
     expect(h[:by]).to eq('b')
@@ -17,9 +19,9 @@ describe Livefyre::Subscription do
   end
 
   it 'should produce the expected json and serialize from it' do
-    sub1 = Livefyre::Subscription.new('a', 'b', 'c')
+    sub1 = Subscription.new('a', 'b', 'c')
     json = sub1.to_json
     sub2 = JSON.parse(json)
-    expect(sub1.to_hash).to eq(Livefyre::Subscription::serialize_from_json(sub2).to_hash)
+    expect(sub1.to_hash).to eq(Subscription::serialize_from_json(sub2).to_hash)
   end
 end

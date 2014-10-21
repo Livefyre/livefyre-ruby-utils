@@ -1,10 +1,13 @@
 require 'spec_helper'
 require 'json'
 require 'livefyre/dto/topic'
+require 'livefyre'
+
+include Livefyre
 
 describe Livefyre::Topic do
   it 'should correctly form a hash' do
-    topic = Livefyre::Topic.new('a', 'b')
+    topic = Topic.new('a', 'b')
     h = topic.to_hash
     expect(h[:id]).to eq('a')
     expect(h[:label]).to eq('b')
@@ -19,9 +22,14 @@ describe Livefyre::Topic do
   end
 
   it 'should produce the expected json and serialize from it' do
-    sub1 = Livefyre::Topic.new('a', 'b', 0, 1)
-    json = sub1.to_json
-    sub2 = JSON.parse(json)
-    expect(sub1.to_hash).to eq(Livefyre::Topic::serialize_from_json(sub2).to_hash)
+    topic = Topic.new('a', 'b', 0, 1)
+    json = topic.to_json
+    topic2 = JSON.parse(json)
+    expect(topic.to_hash).to eq(Topic::serialize_from_json(topic2).to_hash)
+  end
+
+  it 'should retrieve the correct truncated id from a Topic' do
+    topic = Topic.create(Livefyre.get_network(NETWORK_NAME, NETWORK_KEY), 'ID', 'LABEL')
+    expect(topic.truncated_id).to eq('ID')
   end
 end

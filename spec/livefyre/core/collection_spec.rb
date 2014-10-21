@@ -4,6 +4,8 @@ require 'jwt'
 require 'livefyre/dto/topic'
 require 'livefyre/exceptions/livefyre_exception'
 
+include Livefyre
+
 describe Livefyre::Collection do
   before(:each) do
     @site = Livefyre.get_network(NETWORK_NAME, NETWORK_KEY).get_site(SITE_ID, SITE_KEY)
@@ -14,7 +16,7 @@ describe Livefyre::Collection do
     expect{ @site.build_livecomments_collection(TITLE, '', URL) }.to raise_error(ArgumentError)
     expect{ @site.build_livecomments_collection(TITLE, ARTICLE_ID, '') }.to raise_error(ArgumentError)
 
-    expect{ @site.build_collection(nil, nil, nil) }.to raise_error(ArgumentError)
+    expect{ @site.build_collection(nil, nil, nil, nil) }.to raise_error(ArgumentError)
   end
 
   it 'should raise ArgumentError if url is not a valid url for collection' do
@@ -55,17 +57,17 @@ describe Livefyre::Collection do
     collection = @site.build_livecomments_collection(TITLE, ARTICLE_ID, URL)
     expect(collection.is_network_issued).to be false
 
-    topics = [ Livefyre::Topic.create(@site, 'ID', 'LABEL') ]
+    topics = [ Topic.create(@site, 'ID', 'LABEL') ]
     collection.data.topics = topics
     expect(collection.is_network_issued).to be false
 
-    topics << Livefyre::Topic.create(@site.network, 'ID', 'LABEL')
+    topics << Topic.create(@site.network, 'ID', 'LABEL')
     expect(collection.is_network_issued).to be true
   end
 
   it 'should throw an error when trying to retrieve collection id when it is not set' do
     collection = @site.build_livecomments_collection(TITLE, ARTICLE_ID, URL)
-    expect{ collection.data.id }.to raise_error(Livefyre::LivefyreException)
+    expect{ collection.data.id }.to raise_error(LivefyreException)
   end
 
   it 'should product the correct urn for a collection' do

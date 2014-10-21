@@ -43,7 +43,7 @@ module Livefyre
     end
 
     def truncated_id
-      @id[@id.index(TOPIC_IDENTIFIER) + TOPIC_IDENTIFIER.length]
+      @id[@id.index(TOPIC_IDENTIFIER) + TOPIC_IDENTIFIER.length..-1]
     end
 	end
 end
