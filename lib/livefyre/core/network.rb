@@ -49,6 +49,7 @@ module Livefyre
 
 		def build_user_auth_token(user_id, display_name, expires)
 			raise ArgumentError, 'user_id must be alphanumeric' if !(user_id =~ /\A\p{Alnum}+\z/)
+      raise ArgumentError, 'expires must be a number' if !expires.is_a? Numeric
 
 			JWT.encode({
   					:domain => @data.name,

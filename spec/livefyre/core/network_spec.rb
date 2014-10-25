@@ -13,16 +13,16 @@ describe Livefyre::Network do
     expect{ Livefyre.get_network(NETWORK_NAME, '') }.to raise_error(ArgumentError)
   end
 
-  it 'should raise ArgumentError if network name does not end in \'fyre.co\'' do
-    expect{ Livefyre.get_network('blah', NETWORK_KEY) }.to raise_error(ArgumentError)
-  end
-
   it 'should raise ArgumentError if url_template does not contain {id}' do
     expect{ @network.set_user_sync_url('blah.com/') }.to raise_error(ArgumentError)
   end
 
   it 'should raise ArgumentError if user_id is not alphanumeric' do
     expect{ @network.build_user_auth_token('fjoiwje.1fj', 'test', 100) }.to raise_error(ArgumentError)
+  end
+
+  it 'should raise Argument Error if expires is not a number' do
+    expect{ @network.build_user_auth_token('abc', 'test', "100") }.to raise_error(ArgumentError)
   end
 
   it 'should validate a livefyre token' do
