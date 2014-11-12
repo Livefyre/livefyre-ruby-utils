@@ -13,6 +13,10 @@ describe Livefyre::Network do
     expect{ Livefyre.get_network(NETWORK_NAME, '') }.to raise_error(ArgumentError)
   end
 
+  it 'should raise ArgumentError if network name does not end in fyre.co' do
+    expect{ Livefyre.get_network('some.network', '') }.to raise_error(ArgumentError)
+  end
+
   it 'should raise ArgumentError if url_template does not contain {id}' do
     expect{ @network.set_user_sync_url('blah.com/') }.to raise_error(ArgumentError)
   end
