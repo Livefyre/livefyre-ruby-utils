@@ -6,7 +6,7 @@ module Livefyre
       if data.name.to_s.empty?
         reason += '\n Name is null or blank'
       elsif !data.name.to_s.end_with? 'fyre.co'
-        reason += '\n Name must end with \'fyre.co\''.
+        reason += "\n Name must end with 'fyre.co'"
       end
 
       reason += '\n Key is null or blank' if data.key.to_s.empty?
