@@ -22,7 +22,7 @@ describe Livefyre::Network do
   end
 
   it 'should raise ArgumentError if user_id is not alphanumeric' do
-    expect{ @network.build_user_auth_token('fjoiwje.1fj', 'test', 100) }.to raise_error(ArgumentError)
+    expect{ @network.build_user_auth_token('fjoi@wje.1fj', 'test', 100) }.to raise_error(ArgumentError)
   end
 
   it 'should raise Argument Error if expires is not a number' do
@@ -45,6 +45,6 @@ describe Livefyre::Network do
 
   it 'should test network api calls' do
     @network.set_user_sync_url(URL+'/{id}')
-    @network.sync_user(USER_ID)
+    @network.sync_user('abc.ABC-123_huh')
   end
 end

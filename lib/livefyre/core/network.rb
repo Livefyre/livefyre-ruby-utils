@@ -8,14 +8,14 @@ require 'livefyre/model/network_data'
 require 'livefyre/validator/network_validator'
 
 module Livefyre
-	class Network
-		DEFAULT_USER = 'system'
-		DEFAULT_EXPIRES = 86400
+  class Network
+    DEFAULT_USER = 'system'
+    DEFAULT_EXPIRES = 86400
 
     attr_accessor :data, :ssl
 
-		def initialize(data)
-			@data = data
+    def initialize(data)
+      @data = data
       @ssl = true
     end
 
@@ -24,39 +24,39 @@ module Livefyre
       Network.new(NetworkValidator::validate(data))
     end
 
-		def set_user_sync_url(url_template)
-			raise ArgumentError, 'url_template should contain {id}' if !url_template.include?('{id}')
-			
-			response = RestClient.post(
-					"#{Domain::quill(self)}/",
-					{ :actor_token => build_livefyre_token, :pull_profile_url => url_template }
-			){|response, request, result| response }
+    def set_user_sync_url(url_template)
+      raise ArgumentError, 'url_template should contain {id}' if !url_template.include?('{id}')
+
+      response = RestClient.post(
+          "#{Domain::quill(self)}/",
+          { :actor_token => build_livefyre_token, :pull_profile_url => url_template }
+      ){|response, request, result| response }
       raise ApiException.new(self, response.code) if response.code >= 400
-		end
+    end
 
-		def sync_user(user_id)
-			response = RestClient.post(
-					"#{Domain::quill(self)}/api/v3_0/user/#{user_id}/refresh",
-					{ :lftoken => build_livefyre_token }
-				){|response, request, result| response }
+    def sync_user(user_id)
+      response = RestClient.post(
+          "#{Domain::quill(self)}/api/v3_0/user/#{user_id}/refresh",
+          { :lftoken => build_livefyre_token }
+      ){|response, request, result| response }
       raise ApiException.new(self, response.code) if response.code >= 400
-			self
-		end
+      self
+    end
 
-		def build_livefyre_token
-			build_user_auth_token(DEFAULT_USER, DEFAULT_USER, DEFAULT_EXPIRES)
-		end
+    def build_livefyre_token
+      build_user_auth_token(DEFAULT_USER, DEFAULT_USER, DEFAULT_EXPIRES)
+    end
 
-		def build_user_auth_token(user_id, display_name, expires)
-			raise ArgumentError, 'user_id must be alphanumeric' if !(user_id =~ /\A\p{Alnum}+\z/)
+    def build_user_auth_token(user_id, display_name, expires)
+      raise ArgumentError, 'user_id must be alphanumeric' if !(user_id =~ /^[a-zZA-Z0-9_\.-]+$/)
       raise ArgumentError, 'expires must be a number' if !expires.is_a? Numeric
 
-			JWT.encode({
-  					:domain => @data.name,
-  					:user_id => user_id,
-            :display_name => display_name,
-            :expires => Time.new.to_i + expires},
-          @data.key)
+      JWT.encode({
+          :domain => @data.name,
+          :user_id => user_id,
+          :display_name => display_name,
+          :expires => Time.new.to_i + expires},
+        @data.key)
     end
 
     def validate_livefyre_token(lf_token)
@@ -79,5 +79,5 @@ module Livefyre
     def network_name
       @data.name.split('.')[0]
     end
-	end
+  end
 end
