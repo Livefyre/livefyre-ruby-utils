@@ -1,5 +1,6 @@
 # Livefyre Ruby Utility Classes
 [![Gem Version](https://badge.fury.io/rb/livefyre.png)](http://badge.fury.io/rb/livefyre)
+[![Circle CI](https://circleci.com/gh/Livefyre/livefyre-ruby-utils.png?style=badge)](https://circleci.com/gh/Livefyre/livefyre-ruby-utils)
 [![Coverage Status](https://coveralls.io/repos/Livefyre/livefyre-ruby-utils/badge.png)](https://coveralls.io/r/Livefyre/livefyre-ruby-utils)
 
 Livefyre's official library for common server-side tasks necessary for getting Livefyre apps (comments, reviews, etc.) working on your website.
