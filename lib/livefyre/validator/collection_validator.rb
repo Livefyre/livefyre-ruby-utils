@@ -21,7 +21,9 @@ module Livefyre
 
       if data.type == nil
         reason += '\n Type cannot be nil.'
-      elsif not CollectionType.const_defined?(data.type.upcase)
+      elsif not CollectionType.const_defined?(data.type.start_with? 'live'
+          ? data.type.sub('live', '').upcase
+          : data.type.upcase)
         reason += '\n Type must be of valid, recognized type. See CollectionType.'
       end
 
