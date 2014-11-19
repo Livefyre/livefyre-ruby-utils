@@ -1,9 +1,9 @@
 module Livefyre
   module CollectionType
+    BLOG = "liveblog"
+    CHAT = "livechat"
+    COMMENTS = "livecomments"
     COUNTING = "counting"
-    LIVEBLOG = "liveblog"
-    LIVECHAT = "livechat"
-    LIVECOMMENTS = "livecomments"
     RATINGS = "ratings"
     REVIEWS = "reviews"
     SIDENOTES = "sidenotes"

@@ -21,7 +21,7 @@ describe Livefyre::LivefyreUtil do
   it 'should get network from all core objects' do
     network = Livefyre.get_network(NETWORK_NAME, NETWORK_KEY)
     site = network.get_site(SITE_ID, SITE_KEY)
-    collection = site.build_livecomments_collection(TITLE, ARTICLE_ID, URL)
+    collection = site.build_comments_collection(TITLE, ARTICLE_ID, URL)
 
     expect(LivefyreUtil::get_network_from_core(network)).to eq(network)
     expect(LivefyreUtil::get_network_from_core(site)).to eq(network)

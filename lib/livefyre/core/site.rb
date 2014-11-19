@@ -17,16 +17,16 @@ module Livefyre
       Site.new(network, SiteValidator::validate(data))
     end
 
-    def build_livecomments_collection(title, article_id, url)
-      build_collection(CollectionType::LIVECOMMENTS, title, article_id, url)
+    def build_comments_collection(title, article_id, url)
+      build_collection(CollectionType::COMMENTS, title, article_id, url)
     end
 
-    def build_liveblog_collection(title, article_id, url)
-      build_collection(CollectionType::LIVEBLOG, title, article_id, url)
+    def build_blog_collection(title, article_id, url)
+      build_collection(CollectionType::BLOG, title, article_id, url)
     end
 
-    def build_livechat_collection(title, article_id, url)
-      build_collection(CollectionType::LIVECHAT, title, article_id, url)
+    def build_chat_collection(title, article_id, url)
+      build_collection(CollectionType::CHAT, title, article_id, url)
     end
 
     def build_counting_collection(title, article_id, url)

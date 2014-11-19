@@ -15,12 +15,12 @@ describe Livefyre::Site do
   end
 
   it 'should create collections of all types and verify their type' do
-    collection = @site.build_livecomments_collection(TITLE, ARTICLE_ID, URL)
-    expect(collection.data.type).to eq(CollectionType::LIVECOMMENTS)
-    collection = @site.build_liveblog_collection(TITLE, ARTICLE_ID, URL)
-    expect(collection.data.type).to eq(CollectionType::LIVEBLOG)
-    collection = @site.build_livechat_collection(TITLE, ARTICLE_ID, URL)
-    expect(collection.data.type).to eq(CollectionType::LIVECHAT)
+    collection = @site.build_comments_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::COMMENTS)
+    collection = @site.build_blog_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::BLOG)
+    collection = @site.build_chat_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::CHAT)
     collection = @site.build_counting_collection(TITLE, ARTICLE_ID, URL)
     expect(collection.data.type).to eq(CollectionType::COUNTING)
     collection = @site.build_ratings_collection(TITLE, ARTICLE_ID, URL)
@@ -29,7 +29,7 @@ describe Livefyre::Site do
     expect(collection.data.type).to eq(CollectionType::REVIEWS)
     collection = @site.build_sidenotes_collection(TITLE, ARTICLE_ID, URL)
     expect(collection.data.type).to eq(CollectionType::SIDENOTES)
-    collection = @site.build_collection(CollectionType::LIVECOMMENTS, TITLE, ARTICLE_ID, URL)
-    expect(collection.data.type).to eq(CollectionType::LIVECOMMENTS)
+    collection = @site.build_collection(CollectionType::COMMENTS, TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::COMMENTS)
   end
 end

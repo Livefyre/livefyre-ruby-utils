@@ -9,7 +9,7 @@ describe Livefyre::Domain do
   before(:each) do
     @network = Livefyre.get_network(NETWORK_NAME, NETWORK_KEY)
     @site = @network.get_site(SITE_ID, SITE_KEY)
-    @collection = @site.build_livecomments_collection(TITLE, ARTICLE_ID, URL)
+    @collection = @site.build_comments_collection(TITLE, ARTICLE_ID, URL)
   end
 
   it 'should correctly form quill URLs from core objects' do

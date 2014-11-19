@@ -25,7 +25,7 @@ describe Livefyre::PersonalizedStream do
     topics = PersonalizedStream::get_topics(@network)
 
     name = "RUBY PSSTREAM TEST #{Time.new}"
-    collection = @site.build_livecomments_collection(name, name, URL)
+    collection = @site.build_comments_collection(name, name, URL)
     collection.data.topics = topics
     collection.create_or_update
 
@@ -41,7 +41,7 @@ describe Livefyre::PersonalizedStream do
     topics = PersonalizedStream::get_topics(@site)
 
     name = "RUBY PSSTREAM TEST #{Time.new}"
-    collection = @site.build_livecomments_collection(name, name, URL)
+    collection = @site.build_comments_collection(name, name, URL)
     collection.data.topics = topics
     collection.create_or_update
 
@@ -72,7 +72,7 @@ describe Livefyre::PersonalizedStream do
   it 'should test that personalized streams api work for collections' do
     topics = PersonalizedStream::create_or_update_topics(@site, {1 => 'EINS', 2 => 'ZWEI'})
     name = "RUBY PSSTREAM TEST #{Time.new}"
-    collection = @site.build_livecomments_collection(name, name, URL).create_or_update
+    collection = @site.build_comments_collection(name, name, URL).create_or_update
 
     PersonalizedStream::add_collection_topics(collection, topics)
     PersonalizedStream::get_collection_topics(collection)
