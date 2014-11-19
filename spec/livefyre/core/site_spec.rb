@@ -1,73 +1,35 @@
-# coding: utf-8
-
+require 'spec_helper'
 require 'livefyre'
 require 'jwt'
+require 'livefyre/type/collection_type'
 
-RSpec.configure do |c|
-  c.filter_run_excluding :broken => true
-end
+include Livefyre
 
 describe Livefyre::Site do
   before(:each) do
     @site = Livefyre.get_network(NETWORK_NAME, NETWORK_KEY).get_site(SITE_ID, SITE_KEY)
   end
 
-  it 'should raise ArgumentError if url is not a valid url for cmt' do
-    expect{ @site.build_collection_meta_token('test', 'test', 'blah.com/', 'test') }.to raise_error(ArgumentError)
+  it 'should verify the urn' do
+    expect(@site.urn).to eq("#{@site.network.urn}:site=#{SITE_ID}")
   end
 
-  it 'should raise ArgumentError if title is more than 255 characters for cmt' do
-    expect{ @site.build_collection_meta_token('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456', 'test', 'http://test.com', 'test') }.to raise_error(ArgumentError)
-  end
-
-  it 'should raise ArgumentError if not a valid type is passed in when building a collection meta token' do
-    expect{ @site.build_collection_meta_token('', '', 'http://livefyre.com', {type: 'bad type'}) }.to raise_error(ArgumentError)
-  end
-
-  it 'should check type and assign them to the correct field in the collection meta token' do
-    @token = @site.build_collection_meta_token('', '', 'http://livefyre.com', {tags: '', type: 'reviews'})
-    @decoded = JWT.decode(@token, SITE_KEY)
-
-    expect(@decoded['type']).to eq('reviews')
-
-    @token = @site.build_collection_meta_token('', '', 'http://livefyre.com', {type: 'liveblog'})
-    @decoded = JWT.decode(@token, SITE_KEY)
-
-    expect(@decoded['type']).to eq('liveblog')
-  end
-
-  it 'should return a collection meta token' do
-    expect{ @site.build_collection_meta_token('title', 'article_id', 'https://www.url.com', 'tags') }.to be_true
-  end
-
-  it 'should raise ArgumentError if url is not a valid url for checksum' do
-    expect{ @site.build_checksum('test', 'blah.com/', 'test') }.to raise_error(ArgumentError)
-  end
-
-  it 'should raise ArgumentError if title is more than 255 characters for checksum' do
-    expect{ @site.build_checksum('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456', 'http://test.com', 'test') }.to raise_error(ArgumentError)
-  end
-
-  it 'should return a valid checksum' do
-    expect(@site.build_checksum('title', 'https://www.url.com', 'tags')).to eq('4464458a10c305693b5bf4d43a384be7')
-  end
-
-  it 'should check for valid and invalid urls' do
-    expect{ @site.build_checksum('', 'test.com', '') }.to raise_error(ArgumentError)
-
-    @site.build_checksum('', 'http://localhost:8000', '')
-    @site.build_checksum('', 'http://清华大学.cn', '')
-    @site.build_checksum('', 'http://www.mysite.com/myresumé.html', '')
-    @site.build_checksum('', 'https://test.com/', '')
-    @site.build_checksum('', 'ftp://test.com/', '')
-    @site.build_checksum('', "https://test.com/path/test.-_~!$&'()*+,;=:@/dash", '')
-  end
-
-  it 'should test basic site api', :broken => true do
-    @site.get_collection_content(ARTICLE_ID)
-
-    name = "RubyCreateCollection#{Time.new}"
-    id = @site.create_collection(name, name, 'http://answers.livefyre.com/RUBY')
-    expect(@site.get_collection_id(name)).to eq(id)
+  it 'should create collections of all types and verify their type' do
+    collection = @site.build_comments_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::COMMENTS)
+    collection = @site.build_blog_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::BLOG)
+    collection = @site.build_chat_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::CHAT)
+    collection = @site.build_counting_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::COUNTING)
+    collection = @site.build_ratings_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::RATINGS)
+    collection = @site.build_reviews_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::REVIEWS)
+    collection = @site.build_sidenotes_collection(TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::SIDENOTES)
+    collection = @site.build_collection(CollectionType::COMMENTS, TITLE, ARTICLE_ID, URL)
+    expect(collection.data.type).to eq(CollectionType::COMMENTS)
   end
 end

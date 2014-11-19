@@ -1,5 +1,7 @@
 # Livefyre Ruby Utility Classes
 [![Gem Version](https://badge.fury.io/rb/livefyre.png)](http://badge.fury.io/rb/livefyre)
+[![Circle CI](https://circleci.com/gh/Livefyre/livefyre-ruby-utils.png?style=badge)](https://circleci.com/gh/Livefyre/livefyre-ruby-utils)
+[![Coverage Status](https://coveralls.io/repos/Livefyre/livefyre-ruby-utils/badge.png)](https://coveralls.io/r/Livefyre/livefyre-ruby-utils)
 
 Livefyre's official library for common server-side tasks necessary for getting Livefyre apps (comments, reviews, etc.) working on your website.
 
@@ -13,72 +15,7 @@ Or install it yourself:
 
     $ gem install livefyre
 
-## Usage
-
-Instantiating a network object:
-
-```ruby
-network = Livefyre.get_network('network_name', 'network_key')
-```
-
-Building a Livefyre token:
-
-```ruby
-network.build_livefyre_token
-```
-
-Building a user auth token:
-
-```ruby
-network.build_user_auth_token('user_id', 'display_name', expires)
-```
-
-To validate a Livefyre token:
-
-```ruby
-network.validate_livefyre_token('lf_token')
-```
-
-To send Livefyre a user sync url and then have Livefyre pull user data from that url:
-
-```ruby
-network.set_user_sync_url('url_template')
-network.sync_user('user_id')
-```
-
-Instantiating a site object:
-
-```ruby
-site = network.get_site('site_id', 'site_key')
-```
-
-Building a collection meta token:
-*The {options} argument is optional.*
-
-```ruby
-site.build_collection_meta_token('title', 'article_id', 'url', {options})
-```
-
-Building a checksum:
-*The 'tags' argument is optional.*
-
-```ruby
-site.build_checksum('title', 'url', 'tags')
-```
-
-To retrieve content collection data:
-
-```ruby
-site.get_collection_content('article_id')
-```
-
-To get a content collection's id:
-
-```ruby
-site.get_collection_id('article_id')
-```
-
-## Additional Documentation
+## Documentation
 
 Located [here](http://answers.livefyre.com/developers/libraries).
 

@@ -1,3 +1,13 @@
+=== 2.0.0 2014-10-18
+
+* Added many more tests and test config.
+* Added coveralls for test coverage.
+* Refactored Collection related methods into its own class.
+* Restructured the library.
+* Refactored many parts of the library and updated its dependencies.
+* Added requirements to have fyre.co at end of network name.
+* Made user auth check allow dash, underscore, and dots.
+
 === 1.3.2 2014-08-12
 
 * Added SSL toggle for all API requests.
