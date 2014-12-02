@@ -86,5 +86,10 @@ describe Livefyre::Collection do
     collection.create_or_update
 
     expect(collection.data.id).to eq(content['collectionSettings']['collectionId'])
+
+    id = collection.data.id
+    collection.data.id = nil
+    collection.create_or_update
+    expect(collection.data.id).eq(id)
   end
 end

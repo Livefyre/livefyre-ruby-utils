@@ -32,6 +32,7 @@ module Livefyre
       elsif response.code == 409
         response = invoke_collection_api('update')
         if response.code == 200
+          @data.id = JSON.parse(response)['data']['collectionId']
           return self
         end
       end
