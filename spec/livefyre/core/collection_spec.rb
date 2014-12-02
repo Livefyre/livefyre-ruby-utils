@@ -90,6 +90,6 @@ describe Livefyre::Collection do
     id = collection.data.id
     collection.data.id = nil
     collection.create_or_update
-    expect(collection.data.id).eq(id)
+    expect(collection.data.id).to eq(id)
   end
 end
