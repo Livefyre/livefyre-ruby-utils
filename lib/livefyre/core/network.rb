@@ -62,8 +62,8 @@ module Livefyre
     end
 
     def validate_livefyre_token(lf_token)
-      token_attributes = JWT.decode(lf_token, @data.key)
-      token_attributes['domain'] == @data.name && token_attributes['user_id'] == DEFAULT_USER && token_attributes['expires'] >= Time.new.to_i
+      claims, _ = JWT.decode(lf_token, @data.key)
+      claims['domain'] == @data.name && claims['user_id'] == DEFAULT_USER && claims['expires'] >= Time.new.to_i
     end
 
     def get_site(site_id, site_key)

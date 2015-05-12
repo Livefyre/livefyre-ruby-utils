@@ -146,8 +146,8 @@ module Livefyre
 		end
 
 		def self.add_subscriptions(network, user_token, topics)
-      user_id = JWT.decode(user_token, network.data.key)['user_id']
-      user_urn = network.get_urn_for_user(user_id)
+      claims, _ = JWT.decode(user_token, network.data.key)
+      user_urn = network.get_urn_for_user(claims['user_id'])
       
 			url = self.base_url(network) + self.user_subscription_path(user_urn)
       headers = self.get_headers(network, user_token)
@@ -161,8 +161,8 @@ module Livefyre
 		end
 
 		def self.replace_subscriptions(network, user_token, topics)
-      user_id = JWT.decode(user_token, network.data.key)['user_id']
-      user_urn = network.get_urn_for_user(user_id)
+      claims, _ = JWT.decode(user_token, network.data.key)
+      user_urn = network.get_urn_for_user(claims['user_id'])
       
 			url = self.base_url(network) + self.user_subscription_path(user_urn)
       headers = self.get_headers(network, user_token)
@@ -176,8 +176,8 @@ module Livefyre
 		end
 
 		def self.remove_subscriptions(network, user_token, topics)
-      user_id = JWT.decode(user_token, network.data.key)['user_id']
-      user_urn = network.get_urn_for_user(user_id)
+      claims, _ = JWT.decode(user_token, network.data.key)
+      user_urn = network.get_urn_for_user(claims['user_id'])
       
 			url = self.base_url(network) + self.user_subscription_path(user_urn)
       headers = self.get_headers(network, user_token)

@@ -33,12 +33,12 @@ describe Livefyre::Collection do
 
   it 'should check type and assign them to the correct field in the collection meta token' do
     @token = @site.build_reviews_collection(TITLE, ARTICLE_ID, URL).build_collection_meta_token
-    @decoded = JWT.decode(@token, SITE_KEY)
+    @decoded, _ = JWT.decode(@token, SITE_KEY)
 
     expect(@decoded['type']).to eq('reviews')
 
     @token = @site.build_blog_collection(TITLE, ARTICLE_ID, URL).build_collection_meta_token
-    @decoded = JWT.decode(@token, SITE_KEY)
+    @decoded, _ = JWT.decode(@token, SITE_KEY)
 
     expect(@decoded['type']).to eq('liveblog')
   end
