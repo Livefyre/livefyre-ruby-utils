@@ -9,6 +9,7 @@ require 'livefyre/validator/network_validator'
 
 module Livefyre
   class Network
+    ALPHA_DASH_UNDER_DOT_REGEX = /^[a-zZA-Z0-9_\.-]+$/
     DEFAULT_USER = 'system'
     DEFAULT_EXPIRES = 86400
 
@@ -47,8 +48,9 @@ module Livefyre
       build_user_auth_token(DEFAULT_USER, DEFAULT_USER, DEFAULT_EXPIRES)
     end
 
+
     def build_user_auth_token(user_id, display_name, expires)
-      raise ArgumentError, 'user_id must be alphanumeric' if !(user_id =~ /^[a-zZA-Z0-9_\.-]+$/)
+      raise ArgumentError, "userId is not alphanumeric. Ensure the following regex pattern is respected #{ALPHA_DASH_UNDER_DOT_REGEX}" if !(user_id =~ ALPHA_DASH_UNDER_DOT_REGEX)
       raise ArgumentError, 'expires must be a number' if !expires.is_a? Numeric
 
       JWT.encode({

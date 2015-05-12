@@ -1,3 +1,7 @@
+=== 2.0.2 2015-05-12
+
+* Updated dependencies.
+
 === 2.0.1 2014-12-01
 
 * Updated Collection.create_or_update to update collection id on update.

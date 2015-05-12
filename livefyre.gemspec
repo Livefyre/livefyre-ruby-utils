@@ -1,9 +1,7 @@
 # coding: utf-8
-require File.expand_path('../lib/livefyre/version', __FILE__)
-
 Gem::Specification.new do |spec|
   spec.name          = 'livefyre'
-  spec.version       = Livefyre::VERSION
+  spec.version       = '2.0.2'
   spec.authors       = ['Livefyre']
   spec.email         = ['tools@livefyre.com']
   spec.description   = %q{Livefyre Ruby utility classes}
@@ -22,8 +20,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'rake'
-  spec.add_runtime_dependency 'rest-client', '~> 1.7', '>= 1.7.2'
-  spec.add_runtime_dependency 'jwt', '~> 0.1', '>= 0.1.13'
+  spec.add_runtime_dependency 'rest-client', '~> 1.8', '>= 1.8.0'
+  spec.add_runtime_dependency 'jwt', '~> 1.4', '>= 1.4.1'
   spec.add_runtime_dependency 'addressable', '~> 2.3', '>= 2.3.6'
   spec.add_development_dependency 'bundler', '~> 1.7', '>= 1.7.4'
   spec.add_development_dependency 'rspec', '~> 3.1', '>= 3.1'
