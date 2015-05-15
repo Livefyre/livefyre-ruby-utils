@@ -22,7 +22,7 @@ module Livefyre
 
     def id
       if (defined?(@id)).nil?
-        raise LivefyreException, 'Call create_or_update on the collection to set the id.'
+        raise LivefyreException, 'Id not set. Call create_or_update on the collection to set the id, or manually set it on this object.'
       end
       @id
     end
